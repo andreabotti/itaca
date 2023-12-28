@@ -1,0 +1,111 @@
+,reg_shortname,reg_name,province,location,lat,lon,alt
+0,AB,Abruzzo,AQ,L'Aquila,42.21,13.24,700.0
+1,AB,Abruzzo,CH,Chieti,42.21,14.1,325.0
+2,AB,Abruzzo,PE,Pescara,42.28,14.13,5.0
+3,AB,Abruzzo,TE,Teramo,42.4,13.42,275.0
+4,BC,Basilicata,PZ,Oppido Lucano,40.45,15.58,767.0
+5,BC,Basilicata,MT,Matera,40.39,16.29,475.0
+6,CL,Calabria,CS,Fitterizi,39.31,16.8,185.0
+7,CL,Calabria,CZ,Chiaravalle Centrale,38.4,16.24,714.0
+8,CL,Calabria,KR,Crotone,39.5,17.7,10.0
+9,CL,Calabria,RC,Reggio Calabria,38.6,15.39,15.0
+10,CL,Calabria,VV,Vibo Valentia,38.4,16.6,498.0
+11,CM,Campania,AV,Mirabella Eclano,41.2,14.59,309.0
+12,CM,Campania,BN,Airola,41.3,14.33,270.0
+13,CM,Campania,CE,Vitulazio,41.9,14.12,65.0
+14,CM,Campania,SA,Battipaglia,40.44,14.39,55.0
+15,CM,Campania,SA,Policastro Bussentino,40.4,15.31,5.0
+16,ER,Emilia Romagna,BO,Bologna,44.3,11.19,48.0
+17,ER,Emilia Romagna,FC,Cesena,44.8,12.14,42.0
+18,ER,Emilia Romagna,FE,Ferrara,44.49,11.37,6.0
+19,ER,Emilia Romagna,MO,Modena,44.39,10.55,37.0
+20,ER,Emilia Romagna,PC,Piacenza,45.3,9.4,51.0
+21,ER,Emilia Romagna,PR,Parma,44.48,10.19,57.0
+22,ER,Emilia Romagna,RA,Ravenna,44.24,12.12,2.0
+23,ER,Emilia Romagna,RE,Reggio Emilia,44.41,10.38,56.0
+24,ER,Emilia Romagna,RN,Rimini,44.3,12.34,7.0
+25,FV,Friuli Venezia Giulia,GO,Gradisca d'Isonzo ,45.53,13.3,30.0
+26,FV,Friuli Venezia Giulia,PN,Pordenone,45.57,12.39,30.0
+27,FV,Friuli Venezia Giulia,TS,Trieste - Molo Bandiera,45.38,13.45,2.0
+28,FV,Friuli Venezia Giulia,UD,Udine,46.1,13.6,80.0
+29,LZ,Lazio,FR,Frosinone,41.38,13.19,179.0
+30,LZ,Lazio,LT,Latina,41.28,12.54,23.0
+31,LZ,Lazio,RI,Piana di Rieti,42.25,12.48,378.0
+32,LZ,Lazio,RM,Roma ,41.55,12.31,32.0
+33,LZ,Lazio,VT,Montefiascone,42.28,12.0,327.0
+34,LG,Liguria,GE,Recco - Polanesi,44.21,9.7,50.0
+35,LG,Liguria,IM,Sanremo,43.49,7.47,61.0
+36,LG,Liguria,SP,Lerici - Monte Rocchetta,44.4,9.56,360.0
+37,LG,Liguria,SV,Capo Vado Ligure,44.15,8.26,170.0
+38,LM,Lombardia,BG,Bergamo - via Goisis,45.43,9.41,290.0
+39,LM,Lombardia,BS,Bargnano,45.26,10.2,93.0
+40,LM,Lombardia,CO,Vertemate con Minoprio,45.43,9.5,322.0
+41,LM,Lombardia,CR,Capralba,45.27,9.39,96.0
+42,LM,Lombardia,LC,Valmadrera,45.5,9.2,237.0
+43,LM,Lombardia,LO,S.Angelo Lodigiano,45.14,9.24,60.0
+44,LM,Lombardia,MB,Cinisello Balsamo,45.32,9.12,142.0
+45,LM,Lombardia,MI,Milano - via Juvara,45.28,9.13,122.0
+46,LM,Lombardia,MN,Palidano di Gonzaga,44.58,10.46,22.0
+47,LM,Lombardia,PV,Castello di Agogna,45.14,8.41,106.0
+48,LM,Lombardia,SO,Sondrio,46.1,9.52,307.0
+49,LM,Lombardia,VA,Ispra,45.48,8.36,193.0
+50,MH,Marche,AN,Ancona - Regione,43.37,13.31,91.0
+51,MH,Marche,AP,Mozzano,42.49,13.31,180.0
+52,MH,Marche,FM,Porto Sant'Elpidio ,43.15,13.45,5.0
+53,MH,Marche,MC,Camerino,43.8,13.4,581.0
+54,MH,Marche,PU,Villa Fastiggi,43.53,12.52,20.0
+55,ML,Molise,CB,Jelsi,41.31,14.46,581.0
+56,ML,Molise,IS,Forli del Sannio,41.42,14.12,660.0
+57,PM,Piemonte,AL,Alessandria Lobbi,44.56,8.42,90.0
+58,PM,Piemonte,AT,Asti,44.55,8.11,175.0
+59,PM,Piemonte,BI,Massazza,45.28,8.1,226.0
+60,PM,Piemonte,CN,Boves,44.2,7.33,575.0
+61,PM,Piemonte,NO,Cameri,45.32,8.41,173.0
+62,PM,Piemonte,TO,Bauducchi,44.57,7.42,226.0
+63,PM,Piemonte,VB,Pallanza,45.55,8.32,202.0
+64,PM,Piemonte,VC,Vercelli,45.19,8.23,132.0
+65,PU,Puglia,BA,Binetto,40.59,16.44,189.0
+66,PU,Puglia,BR,Mesagne - Moccari,40.33,17.51,53.0
+67,PU,Puglia,BT,Trani,41.14,16.24,63.0
+68,PU,Puglia,FG,Castelluccio dei Sauri - Colazze-Giardinetto,41.2,15.22,233.0
+69,PU,Puglia,LE,Otranto,40.14,18.26,24.0
+70,PU,Puglia,TA,Taranto,40.26,17.25,100.0
+71,SD,Sardegna,CA,Decimomannu,39.19,8.59,20.0
+72,SD,Sardegna,CI,Iglesias,39.17,8.31,208.0
+73,SD,Sardegna,NU,Nuoro,40.2,9.16,490.0
+74,SD,Sardegna,OG,Jerzu,39.47,9.36,46.0
+75,SD,Sardegna,OR,Zeddiani - S. Lucia,39.58,8.36,14.0
+76,SD,Sardegna,OT,Luras,40.55,9.9,488.0
+77,SD,Sardegna,SS,Sassari,40.44,8.32,150.0
+78,SD,Sardegna,VS,Samassi,39.31,8.55,100.0
+79,SC,Sicilia,AG,Agrigento Mandrascava,37.14,13.38,40.0
+80,SC,Sicilia,CL,Gela,37.9,14.2,70.0
+81,SC,Sicilia,CT,Catania,37.26,15.4,10.0
+82,SC,Sicilia,EN,Enna,37.31,14.1,350.0
+83,SC,Sicilia,ME,Patti,38.8,15.1,70.0
+84,SC,Sicilia,PA,Palermo,38.7,13.19,50.0
+85,SC,Sicilia,RG,Ragusa - Cilone,36.57,14.4,650.0
+86,SC,Sicilia,SR,Siracusa,37.3,15.9,90.0
+87,SC,Sicilia,TP,Trapani Fulgatore,37.56,12.39,180.0
+88,TT,Trentino Alto Adige,BZ,Bolzano,46.29,11.2,265.0
+89,TT,Trentino Alto Adige,TN,Trento Sud,46.1,11.7,185.0
+90,TC,Toscana,AR,Terranova Bracciolini - Casa Rota,43.35,11.33,206.0
+91,TC,Toscana,FI,Firenze,43.46,11.15,70.0
+92,TC,Toscana,GR,Rispescia,42.42,11.8,40.0
+93,TC,Toscana,LI,Collesalvetti,43.35,10.28,15.0
+94,TC,Toscana,LU,Lido di Camaiore,43.53,10.14,5.0
+95,TC,Toscana,MS,Carrara,44.3,10.4,90.0
+96,TC,Toscana,PI,San Giuliano Terme - Metato,43.46,10.23,5.0
+97,TC,Toscana,PO,Artimino,43.46,11.2,120.0
+98,TC,Toscana,PT,Pistoia - Santomato,43.56,10.59,130.0
+99,TC,Toscana,SI,Buonconvento,43.5,11.26,189.0
+100,UM,Umbria,PG,Foligno,42.57,12.4,220.0
+101,UM,Umbria,TR,Piediluco,42.32,12.46,370.0
+102,VD,Valle dAosta,AO,Saint-Christophe,45.44,7.21,545.0
+103,VN,Veneto,BL,Feltre,46.0,11.53,267.0
+104,VN,Veneto,PD,Monselice - Ca' Oddo,45.12,11.44,6.0
+105,VN,Veneto,RO,Concadirame,45.5,11.43,6.0
+106,VN,Veneto,TV,Castelfranco Veneto,45.41,11.56,50.0
+107,VN,Veneto,VE,Campagna Lupia - Valle Averto,45.2,12.8,0.0
+108,VN,Veneto,VI,Breganze,45.43,11.34,182.0
+109,VN,Veneto,VR,Buttapietra,45.21,11.0,39.0

@@ -1,0 +1,21 @@
+,reg_shortname,reg_name,province,location
+0,AB,Abruzzo,AQ,L'Aquila
+1,BC,Basilicata,PZ,Potenza
+2,CL,Calabria,CZ,Catanzaro
+3,CM,Campania,,Napoli
+4,ER,Emilia Romagna,BO,Bologna
+5,FV,Friuli Venezia Giulia,TS,Trieste
+6,LZ,Lazio,RM,Roma
+7,LG,Liguria,GE,Genova
+8,LM,Lombardia,MI,Milano
+9,MH,Marche,AN,Ancona
+10,ML,Molise,CB,Campobasso
+11,PM,Piemonte,TO,Torino
+12,PU,Puglia,BA,Bari
+13,SD,Sardegna,CA,Cagliari
+14,SC,Sicilia,PA,Palermo
+15,TC,Toscana,FI,Firenze
+16,TT,Trentino Alto Adige,TN,Trento
+17,UM,Umbria,PG,Perugia
+18,VD,Valle dAosta,AO,Aosta
+19,VN,Veneto,VE,Venezia
