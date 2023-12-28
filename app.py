@@ -1,5 +1,7 @@
 # IMPORT LIBRARIES
-from fn__imports import *
+from fn__import_py_libs import *
+from fn__load_data import *
+
 mapbox_access_token = 'pk.eyJ1IjoiYW5kcmVhYm90dGkiLCJhIjoiY2xuNDdybms2MHBvMjJqbm95aDdlZ2owcyJ9.-fs8J1enU5kC3L4mAJ5ToQ'
 #
 #
@@ -7,7 +9,7 @@ mapbox_access_token = 'pk.eyJ1IjoiYW5kcmVhYm90dGkiLCJhIjoiY2xuNDdybms2MHBvMjJqbm
 #
 #
 # PAGE CONFIG
-st.set_page_config(page_title="ITACCA Streamlit App",   page_icon="🌡️", layout="wide")
+st.set_page_config(page_title="ITACA Streamlit App",   page_icon="🌡️", layout="wide")
 
 st.markdown(
     """<style>.block-container {padding-top: 0rem; padding-bottom: 0rem; padding-left: 3rem; padding-right: 3rem;}</style>""",
@@ -27,111 +29,163 @@ with top_col1:
 
 # Variables to store the selections
 data_sources = ["Local", "FTP", "GitHub"]
-data_types = ["Pickle", "Parquet", "CSV"]
+data_types = ["CSV", "Pickle", "Parquet"]
 selected_source = None
 selected_type = None
 
 # Radio button for data source selection in the sidebar
 data_source = st.sidebar.radio(
     "Select the data source:",
-    ("Local", "FTP", "GitHub")
+    ("Local", "FTP", "GitHub"), index=1,
 )
 
 # Radio button for data type selection in the sidebar
 data_type = st.sidebar.radio(
     "Select the data type:",
-    ("Pickle", "Parquet", "CSV")
+    ("CSV", "Pickle", "Parquet"), index=1,
 )
 
 # Display the selections in the main area
 st.sidebar.write(f"Loading data from: **{data_source}** and type: **{data_type}**")
 
 
+LOCAL_PATH  = r'C:/_GitHub/andreabotti/itaca/'
+FTP_PATH    = r'https://absrd.xyz/streamlit_apps/itaca/'
+GITHUB_PATH = r'https://github.com/andreabotti/itaca/tree/main/'
 
-LOCAL_PATH  = r'C:/_GitHub/andreabotti/itaca/data/'
-FTP_PATH    = r'https://absrd.xyz/streamlit_apps/_weather_data/'
-MAIN_PATH = FTP_PATH
+if data_source == 'Local':
+    MAIN_PATH = LOCAL_PATH
+elif data_source == 'FTP':
+    MAIN_PATH = FTP_PATH
+elif data_source == 'GitHub':
+    MAIN_PATH = GITHUB_PATH
 #
+if data_type == 'CSV':
+    file_ext = '.csv'
+elif data_type == 'Pickle':
+    file_ext = '.pkl'
+elif data_type == 'Parquet':
+    file_ext = '.parquet'
 #
+CSV_PATH = MAIN_PATH + 'data_csv/'
+GEOJSON_PATH = MAIN_PATH + 'data_geojson/'
+TXT_PATH = MAIN_PATH + 'data_txt/'
+SVG_PATH = MAIN_PATH + 'img_svg/'
 #
-#
-#
+
+
+
 # Load Data
-url__cti__dbt = MAIN_PATH + 'CTI__AllStations__DBT.csv'
-url__cob__dbt = MAIN_PATH + 'COB__SelWeatherStations__DBT.csv'
+@st.cache_resource()
+def import_csv_data():
+    df_locations_CTI, df_locations_COB, df_locations_CTI_capo, df_locations_COB_capo = LoadData__locations_CTI_COB(CSV_PATH,file_ext)
+    df_CTI_DBT, df_COB_DBT, df__COB_capo__DBT = LoadData__DBT__CTI_COB__all(CSV_PATH,file_ext)
+    
+    return df_locations_CTI, df_locations_COB, df_locations_CTI_capo, df_locations_COB_capo, df_CTI_DBT, df_COB_DBT, df__COB_capo__DBT
 
-url__cti__df_capoluoghi = MAIN_PATH + 'CTI__capoluoghi.csv'
-url__cti__dbt__capoluoghi = MAIN_PATH + 'COB__SelWeatherStations__Capoluoghi__DBT.csv'
+df_locations_CTI, df_locations_COB, df_locations_CTI_capo, df_locations_COB_capo, df_CTI_DBT, df_COB_DBT, df__COB_capo__DBT = import_csv_data()
 
-url__cti__dict_regions      = MAIN_PATH + 'CTI__dict__Regions.json'
-url__cti__geoson_regions    = MAIN_PATH + 'limits_IT_regions.geojson'
-url__cti__geoson_provinces  = MAIN_PATH + 'limits_IT_provinces.geojson'
+df_capoluoghi = df_locations_CTI_capo
 
-url__CTI__stations  = MAIN_PATH + 'CTI__WeatherStations.csv'
-url__COB__stations  = MAIN_PATH + 'COB__SelWeatherStations.csv'
-url__COB_capo__stations  = MAIN_PATH + 'COB__CapoWeatherStations.csv'
-#
-#
-#
-#
-#
+
+
+# Load TopoJSON
 @st.cache_resource
-def LoadData__locations_CTI_COB():
-    df_CTI = pd.read_csv(url__CTI__stations)
-    df_COB = pd.read_csv(url__COB__stations)
-    df_COB_capo = pd.read_csv(url__COB_capo__stations)
-    return df_CTI, df_COB, df_COB_capo
+def import_geojson_data():
+    geojson_italy_regions, geojson_italy_provinces = LoadData_regions_provinces(GEOJSON_PATH)
 
-df_locations_CTI,df_locations_COB, df_locations_COB_capo = LoadData__locations_CTI_COB()
+    return geojson_italy_regions, geojson_italy_provinces
 
-# Load Capoluoghi dataframe
-@st.cache_resource
-def LoadData__capoluoghi():
-    df = pd.read_csv(url__cti__df_capoluoghi, index_col=False, keep_default_na=False)
-    return df
-df_capoluoghi = LoadData__capoluoghi()
+geojson_italy_regions, geojson_italy_provinces = import_geojson_data()
 
 
-# Load DBT for CTI and COB datasets
-@st.cache_resource
-def LoadData__DBT__CTI_COB__all():
-    df_CTI = pd.read_csv(url__cti__dbt,index_col='datetime')
-    df_COB = pd.read_csv(url__cob__dbt)
-    return df_CTI, df_COB
 
-df_CTI_DBT, df_COB_DBT = LoadData__DBT__CTI_COB__all()
+# def LoadData__locations_CTI_COB():
+#     try:
+#         if file_ext == '.pkl':  # Handling for Pickle files
+#             # Load Pickle file from URL
+#             response_CTI = requests.get(CSV_PATH + 'CTI__list__ITA_WeatherStations__All' + file_ext)
+#             response_CTI.raise_for_status()
+#             df_CTI = pd.read_pickle(io.BytesIO(response_CTI.content))
+
+#             response_COB = requests.get(CSV_PATH + 'COB__list__ITA_WeatherStations_All' + file_ext)
+#             response_COB.raise_for_status()
+#             df_COB = pd.read_pickle(io.BytesIO(response_COB.content))
+
+#             response_CTI_capo = requests.get(CSV_PATH + 'CTI__list__ITA_WeatherStations_Capitals' + file_ext)
+#             response_CTI_capo.raise_for_status()
+#             df_CTI_capo = pd.read_pickle(io.BytesIO(response_CTI_capo.content))
+
+#             response_COB_capo = requests.get(CSV_PATH + 'COB__list__ITA_WeatherStations__Capitals' + file_ext)
+#             response_COB_capo.raise_for_status()
+#             df_COB_capo = pd.read_pickle(io.BytesIO(response_COB_capo.content))
+
+#         else:
+#             # Assume it's a CSV or other format handled by pd.read_csv
+#             df_CTI = pd.read_csv(CSV_PATH + 'CTI__list__ITA_WeatherStations__All' + file_ext, encoding='ISO-8859-1')
+#             df_COB = pd.read_csv(CSV_PATH + 'COB__list__ITA_WeatherStations_All' + file_ext, encoding='ISO-8859-1')
+#             df_CTI_capo = pd.read_csv(CSV_PATH + 'CTI__list__ITA_WeatherStations__Capitals' + file_ext, encoding='ISO-8859-1')
+#             df_COB_capo = pd.read_csv(CSV_PATH + 'COB__list__ITA_WeatherStations_Capitals' + file_ext, encoding='ISO-8859-1')
+    
+#     except requests.exceptions.HTTPError as err:
+#         raise SystemExit(f"HTTP error occurred: {err}")
+#     except UnicodeDecodeError as e:
+#         raise SystemExit(f"Encoding error in file: {e}")
+#     return df_CTI, df_COB, df_CTI_capo, df_COB_capo
 
 
-# Load DBT for Capoluoghi selected COB datasets
-@st.cache_resource
-def LoadData__DBT__COB__capoluoghi():
-    df = pd.read_csv(url__cti__dbt__capoluoghi)
-    return df
 
-df__COB_capo__DBT = LoadData__DBT__COB__capoluoghi()
+# # Load DBT for CTI and COB datasets
+# @st.cache_resource
+# def LoadData__DBT__CTI_COB__all():
+#     try:
+#         if file_ext == '.pkl':  # Handling for Pickle files
+#             # Load Pickle file from URL
+#             response_CTI = requests.get(CSV_PATH + 'CTI__DBT__ITA_WeatherStations__All' + file_ext)
+#             response_CTI.raise_for_status()
+#             df_CTI = pd.read_pickle(io.BytesIO(response_CTI.content))
+
+#             response_COB = requests.get(CSV_PATH + 'COB__DBT__ITA_WeatherStations_TMYx.2007-2021__All' + file_ext)
+#             response_COB.raise_for_status()
+#             df_COB = pd.read_pickle(io.BytesIO(response_COB.content))
+
+#             response_COB_capo = requests.get(CSV_PATH + 'COB__DBT__ITA_WeatherStations_TMYx.2007-2021__Capitals' + file_ext)
+#             response_COB_capo.raise_for_status()
+#             df_COB_capo = pd.read_pickle(io.BytesIO(response_COB_capo.content))
+
+#         else:
+#             # Assume it's a CSV or other format handled by pd.read_csv
+#             df_CTI = pd.read_csv(CSV_PATH +     'CTI__DBT__ITA_WeatherStations__All'                    + file_ext, encoding='ISO-8859-1')
+#             df_COB = pd.read_csv(CSV_PATH +     'COB__DBT__ITA_WeatherStations_TMYx.2007-2021__All'     + file_ext, encoding='ISO-8859-1')
+#             df_COB_capo = pd.read_csv(CSV_PATH +'COB__DBT__ITA_WeatherStations_TMYx.2007-2021__Capitals'+ file_ext, encoding='ISO-8859-1')
+
+#     except requests.exceptions.HTTPError as err:
+#         raise SystemExit(f"HTTP error occurred: {err}")
+#     except UnicodeDecodeError as e:
+#         raise SystemExit(f"Encoding error in file: {e}")
+
+#     return df_CTI, df_COB, df_COB_capo
+
+
 
 
 
 # Load TopoJSON
 @st.cache_resource
 def LoadData_regions_provinces():
-    json_file = json.loads(requests.get(url__cti__geoson_regions).text)
+    json_file = json.loads(requests.get(GEOJSON_PATH + 'limits_IT_regions.geojson').text)
     geojson_italy_regions = json_file
 
-    json_file = json.loads(requests.get(url__cti__geoson_provinces).text)
+    json_file = json.loads(requests.get(GEOJSON_PATH + 'limits_IT_provinces.geojson').text)
     geojson_italy_provinces = json_file
     return geojson_italy_regions, geojson_italy_provinces
-
 geojson_italy_regions, geojson_italy_provinces = LoadData_regions_provinces()
 #
 #
 #
 #
 #
-
-
-#
-#
+url__cti__dict_regions      = MAIN_PATH + 'CTI__dict__Regions.json'
 # DICT REGIONS
 cti__dict_regions = {
     "AB":"Abruzzo",         "BC":"Basilicata",          "CM":"Campania",
@@ -142,79 +196,108 @@ cti__dict_regions = {
     "TC":"Toscana",         "TT":"Trentino Alto Adige", "UM":"Umbria",
     "VD":"Valle dAosta",    "VN":"Veneto"
     }
-dict_regions = pd.read_json( url__cti__dict_regions, typ='series')
-dict_regions = dict(dict_regions)
+dict_regions = cti__dict_regions
+# dict_regions = pd.read_json( url__cti__dict_regions, typ='series')
+# dict_regions = dict(dict_regions)
 regions_list = list(dict_regions.values())
 
+#
+#
+#
+#
+#
+# # DATAFRAME LOCATIONS
+# df_locations_CTI['region'] = df_locations_CTI['reg'].apply(lambda x: dict_regions.get(x))
+# sel_cols = ['reg','region','province','city','lat','lon','alt']
+# df_locations_CTI = df_locations_CTI[sel_cols]
 
-#
-#
-#
-#
-#
-# DATAFRAME LOCATIONS
-df_locations_CTI['region'] = df_locations_CTI['reg'].apply(lambda x: dict_regions.get(x))
-sel_cols = ['reg','region','province','city','lat','lon','alt']
-df_locations_CTI = df_locations_CTI[sel_cols]
-
-df_locations_COB['wmo_code'] = df_locations_COB['wmo_code'].astype(str) 
-df_locations_COB = df_locations_COB[ ['reg', 'location', 'filename', 'wmo_code', 'lat', 'lon','alt'] ]
-df_locations_COB_capo['wmo_code'] = df_locations_COB_capo['wmo_code'].astype(str) 
-df_locations_COB_capo = df_locations_COB_capo[ ['reg', 'location', 'filename', 'wmo_code', 'lat', 'lon','alt'] ]
+# df_locations_COB['wmo_code'] = df_locations_COB['wmo_code'].astype(str) 
+# df_locations_COB = df_locations_COB[ ['reg', 'location', 'filename', 'wmo_code', 'lat', 'lon','alt'] ]
+# df_locations_COB_capo['wmo_code'] = df_locations_COB_capo['wmo_code'].astype(str) 
+# df_locations_COB_capo = df_locations_COB_capo[ ['reg', 'location', 'filename', 'wmo_code', 'lat', 'lon','alt'] ]
 
 
-# DATAFRAME PROVINCES
-df_province = df_locations_CTI.groupby('province').size()
-df_province.rename('station_count', inplace=True)
+# # DATAFRAME PROVINCES
+# df_province = df_locations_CTI.groupby('province').size()
+# df_province.rename('station_count', inplace=True)
 
-# DATAFRAME REGION_SHORT
-df_reg_short   = df_locations_CTI.groupby('reg').size()
-df_reg_short.rename('station_count', inplace=True)
-df_reg_short = df_reg_short.reset_index()
-df_reg_short['region'] = df_reg_short['reg'].apply(lambda x: dict_regions.get(x))
-df_reg_short.set_index('reg',inplace=True)
-df_reg_short = df_reg_short[['region', 'station_count']]
+# # DATAFRAME REGION_SHORT
+# df_reg_short   = df_locations_CTI.groupby('reg').size()
+# df_reg_short.rename('station_count', inplace=True)
+# df_reg_short = df_reg_short.reset_index()
+# df_reg_short['region'] = df_reg_short['reg'].apply(lambda x: dict_regions.get(x))
+# df_reg_short.set_index('reg',inplace=True)
+# df_reg_short = df_reg_short[['region', 'station_count']]
 #
 #
 #
 #
 #
+
+
+def drop_unnamed_columns(df):
+    """ Drop columns where the name contains 'Unnamed' """
+    df = df.loc[:, ~df.columns.str.contains('Unnamed')]
+    return df
+
+
 # SAVE ST SESSION STATES
 st.session_state['df_locations_CTI'] = df_locations_CTI
 st.session_state['df_locations_COB'] = df_locations_COB
 st.session_state['df_locations_COB_capo'] = df_locations_COB_capo
+st.session_state['df_capoluoghi'] = df_capoluoghi
+
 
 st.session_state['df_CTI_DBT'] = df_CTI_DBT
 st.session_state['df_COB_DBT'] = df_COB_DBT
 st.session_state['df__COB_capo__DBT'] = df__COB_capo__DBT
 
-st.session_state['df_reg'] = df_reg_short
 st.session_state['geojson_italy_regions'] = geojson_italy_regions
 st.session_state['geojson_italy_provinces'] = geojson_italy_provinces
 
+# st.session_state['df_reg'] = df_reg_short
 st.session_state['dict_regions'] = dict_regions
 st.session_state['regions_list'] = regions_list
 
-st.session_state['df_capoluoghi'] = df_capoluoghi
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-current_work_dir = os.getcwd()
-# st.caption('Working from path: {}'.format(current_work_dir), unsafe_allow_html=True)
+st.session_state['MAIN_PATH'] = MAIN_PATH
 
-with open( current_work_dir + '/data/CTI_TRY_description01.txt',encoding='utf8') as f:
-    cti_try_descr01 = f.readlines()
-with open(current_work_dir + '/data/CTI_TRY_description02.txt',encoding='utf8') as f:
-    cti_try_descr02 = f.readlines()
-with open(current_work_dir + '/data/weather_morphing_description.txt',encoding='utf8') as f:
-    weather_morphing_descr01 = f.readlines()
+
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+if data_source == 'Local':
+    with open( TXT_PATH + 'CTI_TRY_description01.txt',encoding='utf8') as f:
+        cti_try_descr01 = f.readlines()
+    with open(TXT_PATH + '/CTI_TRY_description02.txt',encoding='utf8') as f:
+        cti_try_descr02 = f.readlines()
+    with open(TXT_PATH + 'weather_morphing_description.txt',encoding='utf8') as f:
+        weather_morphing_descr01 = f.readlines()
+
+elif data_source == 'FTP' or data_source == 'GitHub':
+    MAIN_PATH = GITHUB_PATH
+    try:
+        response = requests.get(TXT_PATH + 'CTI_TRY_description01.txt')
+        response.raise_for_status()  # Will raise an HTTPError if the HTTP request returned an unsuccessful status code
+        cti_try_descr01 = response.text.splitlines()
+
+        response = requests.get(TXT_PATH + 'CTI_TRY_description02.txt')
+        response.raise_for_status()  # Will raise an HTTPError if the HTTP request returned an unsuccessful status code
+        cti_try_descr02 = response.text.splitlines()
+
+        response = requests.get(TXT_PATH + 'weather_morphing_description.txt')
+        response.raise_for_status()  # Will raise an HTTPError if the HTTP request returned an unsuccessful status code
+        weather_morphing_descr01 = response.text.splitlines()
+
+    except requests.exceptions.HTTPError as err:
+        raise SystemExit(err)
+
 #
 #
 #

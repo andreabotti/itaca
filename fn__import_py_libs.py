@@ -2,7 +2,7 @@
 
 # Data handling and general libraries
 import pandas as pd, numpy as np
-import re,os, sys, time, json, datetime
+import io, re, os, sys, time, json, datetime
 from datetime import datetime
 import requests, urllib.request, json
 from meteostat import Stations, Hourly

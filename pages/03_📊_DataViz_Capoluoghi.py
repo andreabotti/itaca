@@ -1,5 +1,5 @@
 # IMPORT LIBRARIES
-from imports import *
+from fn__import_py_libs import *
 mapbox_access_token = 'pk.eyJ1IjoiYW5kcmVhYm90dGkiLCJhIjoiY2xuNDdybms2MHBvMjJqbm95aDdlZ2owcyJ9.-fs8J1enU5kC3L4mAJ5ToQ'
 
 from fn__epw_read       import create_df_weather, epwab, strip_string_from_index, strip_string_from_columns
@@ -13,7 +13,7 @@ fetch_daily_data, fetch_hourly_data, bin_and_calculate_percentages, create_plotl
 #
 #
 # PAGE CONFIG
-st.set_page_config(page_title="ITACCA Streamlit App",   page_icon="🌡️", layout="wide")
+st.set_page_config(page_title="ITACA Streamlit App",   page_icon="🌡️", layout="wide")
 
 st.markdown(
     """<style>.block-container {padding-top: 0rem; padding-bottom: 0rem; padding-left: 3rem; padding-right: 3rem;}</style>""",
@@ -22,7 +22,7 @@ st.markdown(
 # TOP CONTAINER
 TopColA, TopColB = st.columns([6,2])
 with TopColA:
-    st.markdown("# ITA.C.C.A")
+    st.markdown("# ITA.C.A")
     st.markdown("#### Analisi di dati meteorologici ITAliani per facilitare l'Adattamento ai Cambiamenti Climatici")
     st.caption('Developed by AB.S.RD - https://absrd.xyz/')
 #
@@ -116,6 +116,7 @@ provinces = gpd.read_file(url)
 
 # Convert the dataframe with weather stations to a GeoDataFrame
 df = df_locations_COB_capo
+# st.dataframe(df)
 gdf_stations = gpd.GeoDataFrame(
     df,
     geometry=gpd.points_from_xy(df.lon, df.lat),
@@ -152,6 +153,7 @@ colA, spacing, colB = st.columns([14,1,60])
 #
 #
 # Dropdown for Province Selection
+st.dataframe(df_capoluoghi)
 with colA:
     selected_province = st.selectbox("Seleziona una provincia", options=sorted(df_capoluoghi.province), index=4)
 
@@ -198,9 +200,10 @@ except:
 filtered__df_CTI_DBT_plot = df_CTI_DBT_plot.loc[:, [col for col in df_CTI_DBT_plot.columns if p in col[:2]]]
 wmo_code_selected = filtered_df_COB.wmo_code.to_list()
 
-filtered__df_COB_DBT_plot = pd.DataFrame()    
+filtered__df_COB_DBT_plot = pd.DataFrame()   
+
 for wmo in wmo_code_selected:
-    df_sel = df_COB_DBT_plot.loc[:, [col for col in df_COB_DBT_plot.columns if wmo in col[:6]]]
+    df_sel = df_COB_DBT_plot.loc[:, [col for col in df_COB_DBT_plot.columns if str(wmo) in col[:6]]]
     filtered__df_COB_DBT_plot = pd.concat([filtered__df_COB_DBT_plot, df_sel], axis=1)
 #
 #
@@ -315,7 +318,7 @@ with colB:
                 "Anno per visualizzare i dati Meteostat", 
                 min_value=2010, 
                 max_value=datetime.now().year, 
-                value=st.session_state['sel_year'], 
+                value=2023, 
                 key="sel_year2",
                 help='I dati climatici **CTI** esprimono valori medi - non legati ad un anno preciso. La serie temporale CTI viene *trasportata* (senza variazione di valori) all\'anno scelto per permettere confronto visivo con i dati **Meteostat**'
             )

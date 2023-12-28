@@ -1,5 +1,5 @@
 # IMPORT LIBRARIES
-from imports import *
+from fn__import_py_libs import *
 mapbox_access_token = 'pk.eyJ1IjoiYW5kcmVhYm90dGkiLCJhIjoiY2xuNDdybms2MHBvMjJqbm95aDdlZ2owcyJ9.-fs8J1enU5kC3L4mAJ5ToQ'
 #
 #
@@ -7,7 +7,7 @@ mapbox_access_token = 'pk.eyJ1IjoiYW5kcmVhYm90dGkiLCJhIjoiY2xuNDdybms2MHBvMjJqbm
 #
 #
 # PAGE CONFIG
-st.set_page_config(page_title="ITACCA Streamlit App",   page_icon="🌡️", layout="wide")
+st.set_page_config(page_title="ITACA Streamlit App",   page_icon="🌡️", layout="wide")
 
 st.markdown(
     """<style>.block-container {padding-top: 0rem; padding-bottom: 0rem; padding-left: 3rem; padding-right: 3rem;}</style>""",
@@ -16,7 +16,7 @@ st.markdown(
 # TOP CONTAINER
 top_col1, top_col2 = st.columns([6,1])
 with top_col1:
-    st.markdown("# ITA.C.C.A")
+    st.markdown("# ITA.C.A")
     st.markdown("#### Analisi di dati meteorologici ITAliani per facilitare l'Adattamento ai Cambiamenti Climatici")
     st.caption('Developed by AB.S.RD - https://absrd.xyz/')
 #
@@ -35,6 +35,9 @@ geojson_italy_provinces = st.session_state['geojson_italy_provinces']
 
 df_CTI_DBT = st.session_state['df_CTI_DBT']
 df_COB_DBT = st.session_state['df_COB_DBT']
+
+MAIN_PATH = st.session_state['MAIN_PATH']
+SVG_PATH = MAIN_PATH + 'img_svg/'
 #
 #
 #
@@ -47,8 +50,8 @@ color_marker_COB = st.sidebar.color_picker('Colore per marker COB', '#E07E34')
 #
 # Filter CTI and COB stations based on selected region
 selected_reg = [i for i in dict_regions if dict_regions[i]==selected_region][0]
-df_SelectedLocations_COB = df_locations_COB[df_locations_COB.reg == selected_reg]
-df_SelectedLocations_CTI = df_locations_CTI[df_locations_CTI.region == selected_region]
+df_SelectedLocations_COB = df_locations_COB[df_locations_COB.reg_shortname == selected_reg]
+df_SelectedLocations_CTI = df_locations_CTI[df_locations_CTI.reg_name == selected_region]
 #
 df_TablePlot_CTI = df_SelectedLocations_CTI
 df_TablePlot_COB = df_SelectedLocations_COB
@@ -56,15 +59,15 @@ try:
     df_TablePlot_COB.drop(['location'], axis=1, inplace=True)
 except:
     ''
-df_TablePlot_CTI = df_TablePlot_CTI[['province', 'city', 'lat', 'lon', 'alt']]
-df_TablePlot_COB.drop(['reg'], axis=1, inplace=True)
+df_TablePlot_CTI = df_TablePlot_CTI[['province', 'location', 'lat', 'lon', 'alt']]
+df_TablePlot_COB.drop(['reg_shortname'], axis=1, inplace=True)
 n = df_TablePlot_CTI.shape[0]
 #
 #
 #
 #
 #
-image_path = './img/{r}.svg'.format(r=selected_reg)
+image_path = SVG_PATH + '{r}.svg'.format(r=selected_reg)
 with top_col2:
     st.markdown('\n')
     st.image(image_path, width=170)
@@ -100,7 +103,7 @@ with col1:
         go.Scattermapbox(
             lat=df_SelectedLocations_COB.lat,
             lon=df_SelectedLocations_COB.lon,
-            text=df_SelectedLocations_COB.filename,
+            text=df_SelectedLocations_COB.epw_filename,
             mode='markers',
             marker=go.scattermapbox.Marker(size=10, color=color_marker_COB),
             )
