@@ -144,10 +144,10 @@ def calculate_and_plot_differences(threshold, df1, df2, color_cooler, color_warm
     fig_weekly.update_layout(
         showlegend=False,
         # title_text="Weekly Differences",
-        xaxis_title="SETTIMANE",
+        # xaxis_title="SETTIMANE",
         yaxis_title="Piu fresco | Piu caldo",
-        yaxis_range=[-rounded_max,rounded_max],
-        yaxis=dict(ticksuffix=' DH'),
+        # yaxis_range=[-rounded_max,rounded_max],
+        yaxis=dict(ticksuffix=' GH'),
         height=chart_height,
         margin=dict(l=0,r=0,t=40,b=0),
     )
@@ -165,10 +165,10 @@ def calculate_and_plot_differences(threshold, df1, df2, color_cooler, color_warm
     # Update subplot layout for monthly differences
     fig_monthly.update_layout(
         showlegend=False,
-        xaxis_title="MESI",
+        # xaxis_title="MESI",
         yaxis_title="Piu fresco | Piu caldo",
-        yaxis_range=[-rounded_max*1.10,rounded_max*1.10],
-        yaxis=dict(ticksuffix=' DH'),
+        # yaxis_range=[-rounded_max*1.10,rounded_max*1.10],
+        yaxis=dict(ticksuffix=' GH'),
         height=chart_height,
         margin=dict(l=0,r=0,t=40,b=0),
     )
@@ -227,11 +227,11 @@ def generate_line_chart(
             ),
         # 
         showlegend=True,
-        legend=dict(x=0.79, y=1.16),
+        legend=dict(x=0.79, y=1.25),
         # 
         height=chart_height,
         # width=1500,
-        margin=dict(l=0,r=0,t=40,b=0),
+        margin=dict(l=0,r=0,t=50,b=0),
         # 
         template="plotly_white",
         font=dict(family="Swis721 BT", size=14),
@@ -344,7 +344,7 @@ def bin_and_calculate_percentages(temperature_data, temperature_col, intervals, 
     # Calculate percentage
     binned_data['percentage'] = (binned_data['count'] / total_counts) * 100
     binned_data['temp_bin'] = binned_data['temp_bin'].astype(str)  # Convert bin to string for plotting
-
+  
     return binned_data
 
 

@@ -27,11 +27,23 @@ def LoadData__locations_CTI_COB(CSV_PATH,file_ext):
 
         else:
             # Assume it's a CSV or other format handled by pd.read_csv
-            df_CTI = pd.read_csv(CSV_PATH + 'CTI__list__ITA_WeatherStations__All' + file_ext, encoding='ISO-8859-1')
-            df_COB = pd.read_csv(CSV_PATH + 'COB__list__ITA_WeatherStations_All' + file_ext, encoding='ISO-8859-1')
-            df_CTI_capo = pd.read_csv(CSV_PATH + 'CTI__list__ITA_WeatherStations__Capitals' + file_ext, encoding='ISO-8859-1')
-            df_COB_capo = pd.read_csv(CSV_PATH + 'COB__list__ITA_WeatherStations_Capitals' + file_ext, encoding='ISO-8859-1')
-    
+            df_CTI = pd.read_csv(
+                CSV_PATH + 'CTI__list__ITA_WeatherStations__All' + file_ext,
+                encoding='ISO-8859-1', keep_default_na=False, na_values=['NaN'],
+                )
+            df_COB = pd.read_csv(
+                CSV_PATH + 'COB__list__ITA_WeatherStations_All' + file_ext,
+                encoding='ISO-8859-1', keep_default_na=False, na_values=['NaN'],
+                )
+            df_CTI_capo = pd.read_csv(
+                CSV_PATH + 'CTI__list__ITA_WeatherStations__Capitals' + file_ext,
+                encoding='ISO-8859-1', keep_default_na=False, na_values=['NaN'],
+                )
+            df_COB_capo = pd.read_csv(
+                CSV_PATH + 'COB__list__ITA_WeatherStations_Capitals' + file_ext,
+                encoding='ISO-8859-1', keep_default_na=False, na_values=['NaN'],
+                )
+
     except requests.exceptions.HTTPError as err:
         raise SystemExit(f"HTTP error occurred: {err}")
     except UnicodeDecodeError as e:
@@ -62,10 +74,21 @@ def LoadData__DBT__CTI_COB__all(CSV_PATH,file_ext):
 
         else:
             # Assume it's a CSV or other format handled by pd.read_csv
-            df_CTI = pd.read_csv(CSV_PATH +     'CTI__DBT__ITA_WeatherStations__All'                    + file_ext, encoding='ISO-8859-1')
-            df_COB = pd.read_csv(CSV_PATH +     'COB__DBT__ITA_WeatherStations_TMYx.2007-2021__All'     + file_ext, encoding='ISO-8859-1')
-            df_COB_capo = pd.read_csv(CSV_PATH +'COB__DBT__ITA_WeatherStations_TMYx.2007-2021__Capitals'+ file_ext, encoding='ISO-8859-1')
-
+            df_CTI = pd.read_csv(
+                CSV_PATH +     'CTI__DBT__ITA_WeatherStations__All'                    + file_ext,
+                parse_dates=['datetime'], index_col='datetime',
+                encoding='ISO-8859-1', keep_default_na=False, na_values=['NaN'],
+                )
+            df_COB = pd.read_csv(
+                CSV_PATH +     'COB__DBT__ITA_WeatherStations_TMYx.2007-2021__All'     + file_ext,
+                parse_dates=['datetime'], index_col='datetime',
+                encoding='ISO-8859-1', keep_default_na=False, na_values=['NaN'],
+                )
+            df_COB_capo = pd.read_csv(
+                CSV_PATH +'COB__DBT__ITA_WeatherStations_TMYx.2007-2021__Capitals'+ file_ext,
+                parse_dates=['datetime'], index_col='datetime',
+                encoding='ISO-8859-1', keep_default_na=False, na_values=['NaN'],
+                )
     except requests.exceptions.HTTPError as err:
         raise SystemExit(f"HTTP error occurred: {err}")
     except UnicodeDecodeError as e:

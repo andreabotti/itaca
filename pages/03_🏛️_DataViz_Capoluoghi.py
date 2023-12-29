@@ -28,7 +28,7 @@ with TopColA:
 #
 with TopColB:
     # Introduce vertical spaces
-    st.markdown('<br><br>', unsafe_allow_html=True)
+    st.markdown('<div style="margin: 35px;"></div>', unsafe_allow_html=True)  # 20px vertical space
 
     with st.container(border=True):
         # Your content here
@@ -71,6 +71,11 @@ geojson_italy_provinces = st.session_state['geojson_italy_provinces']
 df_CTI_DBT = st.session_state['df_CTI_DBT']
 df_COB_DBT = st.session_state['df_COB_DBT']
 df__COB_capo__DBT = st.session_state['df__COB_capo__DBT']
+
+MAIN_PATH = st.session_state['MAIN_PATH'] 
+CSV_PATH = st.session_state['CSV_PATH'] 
+GEOJSON_PATH = st.session_state['GEOJSON_PATH'] 
+FileExt = st.session_state['FileExt']
 #
 #
 #
@@ -152,9 +157,19 @@ colA, spacing, colB = st.columns([14,1,60])
 #
 #
 #
-# Dropdown for Province Selection
-st.dataframe(df_capoluoghi)
 with colA:
+    st.markdown('<div style="margin: 23px;"></div>', unsafe_allow_html=True)  # 20px vertical space
+    st.markdown('###### Filtro dati per la visualizzazione')
+
+    # sel_month_COB = st.select_slider('Mese iniziale e mese finale',   options=np.arange(1,13,1),  value=(1,12), disabled=True)
+    lower_threshold = st.slider('Temperatura min. per confronto dati', min_value=20, max_value=40, step=1, value=25)
+
+
+with colA:
+    st.markdown('<div style="margin: 50px;"></div>', unsafe_allow_html=True)  # 20px vertical space
+
+    # Create a placeholder for the markdown
+    markdown_placeholder = st.empty()
     selected_province = st.selectbox("Seleziona una provincia", options=sorted(df_capoluoghi.province), index=4)
 
 p = selected_province
@@ -166,6 +181,11 @@ try:
 except:
     prov_name = None
 
+#  Update the placeholder based on the selection - placeholder 'p' will be replaced by the selected option
+markdown_text = f'###### Provincia: {prov_name} \({p}\)'
+markdown_placeholder.markdown(markdown_text)
+
+
 #
 map_COB__sel_lat, map_COB__sel_lon, map_COB__sel_location = [42], [15], []
 try:
@@ -176,26 +196,25 @@ except:
     ''
 #
 #
-#
-#
-#
 try:
     fig_small_221, fig_small_222 = generate_scatter_map_small(
         latitude_col=map_COB__sel_lat,
         longitude_col=map_COB__sel_lon,
         location_col=map_COB__sel_location,
-        chart_height=230,
+        chart_height=270,
         marker_size=10, marker_color=color_marker_COB,
-        zoom01=10, zoom02=12,
+        zoom01=12, zoom02=12,
         mapbox_access_token = mapbox_access_token,
         )
 except:
     fig_small_221, fig_small_222 = go.Figure(), go.Figure()
-#
-#
-#
-#
-#
+
+
+
+fig_line__chart_height = 350
+fig_diff_monthly__chart_height = 290
+
+
 # Filter CTI and COB dataframes for plotting
 filtered__df_CTI_DBT_plot = df_CTI_DBT_plot.loc[:, [col for col in df_CTI_DBT_plot.columns if p in col[:2]]]
 wmo_code_selected = filtered_df_COB.wmo_code.to_list()
@@ -205,40 +224,9 @@ filtered__df_COB_DBT_plot = pd.DataFrame()
 for wmo in wmo_code_selected:
     df_sel = df_COB_DBT_plot.loc[:, [col for col in df_COB_DBT_plot.columns if str(wmo) in col[:6]]]
     filtered__df_COB_DBT_plot = pd.concat([filtered__df_COB_DBT_plot, df_sel], axis=1)
-#
-#
-#
-#
-#
-# LINE CHART
-fig_line = generate_line_chart(
-    color_marker_A = color_marker_CTI,
-    color_marker_B = color_marker_COB,
-    df_data_A = filtered__df_CTI_DBT_plot,
-    df_data_B = filtered__df_COB_DBT_plot,
-    color_pool_A = color_pool_CTI,
-    color_pool_B = color_pool_COB,
-    title_text = 'Temp Bulbo Secco',
-    chart_height = 400,
-    )
-#
-#
-#
-#
-#
-colA.markdown('###### Provincia: {p1} \({p2}\)'.format(p2=p, p1=prov_name))
-colA.plotly_chart(fig_small_221, use_container_width=True) 
-#
-#
-#
-#
-#
-with colA:
-    st.markdown('\n')
-    st.markdown('###### Filtro dati per la visualizzazione')
+  
 
-    sel_month_COB = st.select_slider('Mese iniziale e mese finale',   options=np.arange(1,13,1),  value=(1,12))
-    lower_threshold = st.slider('Temperatura min. per confronto dati', min_value=20, max_value=40, step=1, value=20)
+colA.plotly_chart(fig_small_221, use_container_width=True) 
 #
 #
 #
@@ -246,7 +234,9 @@ with colA:
 #
 # Adding Tabs in Column 22 for Different Charts
 with colB:
-    tab1, tab2, tab3, tab4 = st.tabs(["📈 CTI vs OneClimate TMY", "📈 CTI vs Meteostat", "🗃 CTI vs Future Data", 'All Data'])
+    tab1, tab2, tab3, tab4 = st.tabs(
+        ["🌤️ CTI vs COB (anno tipo recente)", "🌡️ CTI vs MSTAT (anni reali recenti)", "🥵 CTI vs FWG (anno tipo futuro)", '📊 Tutti i dati - Heatmaps']
+        )
 
     with tab1:
         st.session_state['active_tab'] = 'tab1'
@@ -257,18 +247,53 @@ with colB:
 
         # Filter CTI and COB dataframes for plotting
         filtered__df_CTI_DBT_plot = df_CTI_DBT_plot.loc[:, [col for col in df_CTI_DBT_plot.columns if p in col[:2]]]
-        wmo_code_selected = filtered_df_COB.wmo_code.to_list()
+        wmo_code_selected = filtered_df_COB.wmo_code.astype(str).to_list()
+
+        # Create a multi-select menu to choose column headers
+        with colB1:
+            wmo_sel_plotting = colB1.multiselect('Scegli stazione COB tramite codice WMO', wmo_code_selected, default=wmo_code_selected[0])
+
+        with colB2:
+            df_locations_COB_capo['wmo_code'] = df_locations_COB_capo['wmo_code'].astype(str)
+
+            # Ensure selected_wmo_code is a list
+            if isinstance(wmo_sel_plotting, list):
+                filtered_df = df_locations_COB_capo[df_locations_COB_capo['wmo_code'].isin(wmo_sel_plotting)]
+            else:
+                raise ValueError("selected_wmo_code must be a list of string values")
+
+            filtered_df.drop(['reg_shortname', 'reg_name', 'location', 'wmo_code'], axis=1, inplace=True)
+            epw_filename = filtered_df.epw_filename.to_list()[0]
+            lat, lon, alt = filtered_df.lat.to_list()[0], filtered_df.lon.to_list()[0], filtered_df.alt.to_list()[0]
+            st.markdown('EPW filename: **{}**'.format(epw_filename))
+            st.markdown('LAT: **{lat}** -- LON: **{lon}** -- ALT: **{alt}**'.format(lat=lat, lon=lon, alt=alt))
+
+            # st.table(filtered_df)
+
+
+        # Filter DataFrame columns based on wmo_codes
+        if wmo_sel_plotting:
+            selected_columns = [col for col in filtered__df_COB_DBT_plot.columns if any(code in col for code in wmo_sel_plotting)]
+
+            # Display the selected columns of the DataFrame
+            if selected_columns:
+                double_filtered__df_COB_DBT_plot = filtered__df_COB_DBT_plot[selected_columns]
+                # st.dataframe(double_filtered__df_COB_DBT_plot[:3])
+            else:
+                st.write("No columns found with the specified WMO codes")
+        else:
+            st.write("Please enter one or more WMO codes")
 
 
         try:
-            df_CTI_filtered, df_COB_filtered, df_diff, fig_weekly, fig_monthly = calculate_and_plot_differences(
+            df_CTI_filtered, df_COB_filtered, df_diff, fig_weekly, fig_diff_monthly = calculate_and_plot_differences(
                 threshold=lower_threshold,
                 df1=filtered__df_CTI_DBT_plot,
-                df2=filtered__df_COB_DBT_plot,
-                color_cooler = color_marker_CTI, color_warmer=color_marker_COB, chart_height=320,
+                df2=double_filtered__df_COB_DBT_plot,
+                color_cooler = color_marker_CTI, color_warmer=color_marker_COB, chart_height=fig_diff_monthly__chart_height,
                 )
         except:
-            fig_weekly, fig_monthly = go.Figure(), go.Figure()
+            fig_weekly, fig_diff_monthly = go.Figure(), go.Figure()
 
         sel_location_CTI = selected_province
         sel_location_COB = selected_province
@@ -279,29 +304,34 @@ with colB:
                 :blue[BLU] indica _{cob} (COB)_ :blue[più fresco] di _{cti} (CTI)_.'.format(
                 cti=sel_location_CTI, cob=sel_location_COB, t=lower_threshold)
 
-            st.markdown(
-            '###### Differenze di temperatura tra: CTI e COB',
-            help=help_text)
-            st.caption('Valori calcolati per le temperature superiori a **{t} C**'.format(t=lower_threshold))
 
-        colB1.plotly_chart(fig_monthly,use_container_width=True)
+            st.markdown('<div style="margin: 65px;"></div>', unsafe_allow_html=True)
+            st.markdown('###### Differenze di temperatura tra: CTI e COB',help=help_text)
+
+            st.plotly_chart(fig_diff_monthly,use_container_width=True)
+
+            st.markdown('<div style="margin: 10px;"></div>', unsafe_allow_html=True)  # 20px vertical space
+            st.write('Valori calcolati per temperature superiori a **{t} C**'.format(t=lower_threshold))
+
 
 
         # LINE CHART
-        colB2.markdown('###### Temperature a Bulbo Secco per l\'anno tipo')
-        fig_line_CTI_COB = generate_line_chart(
-            color_marker_A = color_marker_CTI,
-            color_marker_B = color_marker_COB,
-            df_data_A = filtered__df_CTI_DBT_plot,
-            df_data_B = filtered__df_COB_DBT_plot,
-            color_pool_A = color_pool_CTI,
-            color_pool_B = color_pool_COB,
-            title_text = '',
-            # title_text = 'Temperature a Bulbo Secco per l\'anno {}'.format(sel_year),
-            chart_height = 380,
-            )
+        with colB2:
+            st.markdown('<div style="margin: 65px;"></div>', unsafe_allow_html=True)  # 20px vertical space
+            st.markdown('###### Temperature a Bulbo Secco per l\'anno tipo')
+            fig_line_CTI_COB = generate_line_chart(
+                color_marker_A = color_marker_CTI,
+                color_marker_B = color_marker_COB,
+                df_data_A = filtered__df_CTI_DBT_plot,
+                df_data_B = double_filtered__df_COB_DBT_plot,
+                color_pool_A = color_pool_CTI,
+                color_pool_B = color_pool_COB,
+                title_text = '',
+                # title_text = 'Temperature a Bulbo Secco per l\'anno {}'.format(sel_year),
+                chart_height = fig_line__chart_height,
+                )
 
-        colB2.plotly_chart(fig_line_CTI_COB, use_container_width=True)
+            st.plotly_chart(fig_line_CTI_COB, use_container_width=True)
 
 
 
@@ -313,7 +343,7 @@ with colB:
         # spacing.markdown('_sp_')
         # colB2.markdown('_colB2_')
 
-        with colA:
+        with colB1:
             sel_year_tab2 = st.slider(
                 "Anno per visualizzare i dati Meteostat", 
                 min_value=2010, 
@@ -322,6 +352,8 @@ with colB:
                 key="sel_year2",
                 help='I dati climatici **CTI** esprimono valori medi - non legati ad un anno preciso. La serie temporale CTI viene *trasportata* (senza variazione di valori) all\'anno scelto per permettere confronto visivo con i dati **Meteostat**'
             )
+            st.markdown('<div style="margin: 32px;"></div>', unsafe_allow_html=True)  # 20px vertical space
+
         st.session_state['sel_year'] = sel_year_tab2
         sel_year = sel_year_tab2
         start_date = datetime(sel_year, 1, 1)
@@ -341,14 +373,14 @@ with colB:
 
 
         try:
-            df_CTI_filtered, df_COB_filtered, df_diff, fig_weekly, fig_monthly = calculate_and_plot_differences(
+            df_CTI_filtered, df_COB_filtered, df_diff, fig_weekly, fig_diff_monthly = calculate_and_plot_differences(
                 threshold=lower_threshold,
                 df1=filtered__df_CTI_DBT_plot,
                 df2=df__MSTAT_DBT_plot,
-                color_cooler = color_marker_CTI, color_warmer=color_marker_MSTAT, chart_height=320,
+                color_cooler = color_marker_CTI, color_warmer=color_marker_MSTAT, chart_height=fig_diff_monthly__chart_height,
                 )
         except:
-            fig_weekly, fig_monthly = go.Figure(), go.Figure()
+            fig_weekly, fig_diff_monthly = go.Figure(), go.Figure()
 
         sel_location_CTI = selected_province
         sel_location_COB = selected_province
@@ -362,27 +394,28 @@ with colB:
                 :blue[BLU] indica _{cob} (COB)_ :blue[più fresco] di _{cti} (CTI)_.'.format(
                 cti=sel_location_CTI, cob=sel_location_COB, t=lower_threshold)
 
-            st.markdown(
-            '###### Differenze di temperatura tra: CTI e MSTAT', help=help_text)
-            st.caption('Valori calcolati per le temperature superiori a **{t} C**'.format(t=lower_threshold))
+            st.markdown('<div style="margin: 15px;"></div>', unsafe_allow_html=True)
+            st.markdown('###### Differenze di temperatura tra: CTI e MSTAT', help=help_text)
 
-        colB1.plotly_chart(fig_monthly,use_container_width=True)
-
+            st.plotly_chart(fig_diff_monthly,use_container_width=True)
+            st.write('Valori calcolati per temperature superiori a **{t} C**'.format(t=lower_threshold))
 
 
         # LINE CHART
-        colB2.markdown('###### Temperature a Bulbo Secco per l\'anno {}'.format(sel_year))
-        fig_line_CTI_MSTAT = generate_line_chart(
-            color_marker_A = color_marker_CTI,
-            color_marker_B = color_marker_MSTAT,
-            df_data_A = filtered__df_CTI_DBT_plot,
-            df_data_B = df__MSTAT_DBT_plot,
-            color_pool_A = color_pool_CTI,
-            color_pool_B = color_pool_COB,
-            title_text = '',
-            # title_text = 'Temperature a Bulbo Secco per l\'anno {}'.format(sel_year),
-            chart_height = 380,
-            )
+        with colB2:
+            st.markdown('<div style="margin: 15px;"></div>', unsafe_allow_html=True)
+            st.markdown('###### Temperature a Bulbo Secco per l\'anno {}'.format(sel_year))
+            fig_line_CTI_MSTAT = generate_line_chart(
+                color_marker_A = color_marker_CTI,
+                color_marker_B = color_marker_MSTAT,
+                df_data_A = filtered__df_CTI_DBT_plot,
+                df_data_B = df__MSTAT_DBT_plot,
+                color_pool_A = color_pool_CTI,
+                color_pool_B = color_pool_COB,
+                title_text = '',
+                # title_text = 'Temperature a Bulbo Secco per l\'anno {}'.format(sel_year),
+                chart_height = fig_line__chart_height,
+                )
 
         colB2.plotly_chart(fig_line_CTI_MSTAT, use_container_width=True)
 
@@ -391,29 +424,56 @@ with colB:
 
 
 
+##### ##### #####
+# TEMPORARY - TO BE REPLACED #
+##### ##### #####
 
+    df_FWG_DBT = pd.read_csv(
+        CSV_PATH +     'FWG__DBT__ITA_WeatherStations__Capitals' + FileExt,
+        parse_dates=['datetime'], index_col='datetime',
+        )
 
     with tab3:
         st.session_state['active_tab'] = 'tab3'
 
-        # Tab 3: Slider disabled (show static value)
-        # st.text(f"Selected Year (disabled): {st.session_state['sel_year']}")
-
         colB1, spacing, colB2 = st.columns([12,1,30])
 
-        # Fetch METEOSTAT data
-    
-    
+        # FWG data
+        with colB1:
+            # Create a select slider with string values
+            fwg_scenario_values = ['ssp126', 'ssp245', 'ssp370', 'ssp585']
+            sel_scenario_tab3 = st.select_slider('Scegli scenario emissivo futuro', options=fwg_scenario_values, value='ssp245')
+
+        with colB2:
+            fwg_year_values = ['2050', '2080']
+            sel_year_tab3 = st.radio(label='Scegli anno futuro', options=fwg_year_values)
+            # help='I dati climatici **FWG** esprimono valori medi - legati a proiezioni future. La serie temporale CTI viene *trasportata* (senza variazione di valori) all\'anno scelto per permettere confronto visivo con i dati **Meteostat**'
+
+
+        # Filter columns
+        # # Compile regular expressions for case-insensitive matching
+        # sel_scenario_tab3 = re.compile(re.escape(sel_scenario_tab3), re.IGNORECASE)
+        # sel_year_tab3 = re.compile(re.escape(sel_year_tab3), re.IGNORECASE)
+        filtered_columns = [col for col in df_FWG_DBT.columns if sel_scenario_tab3 in col and sel_year_tab3 in col]
+        filtered__df_FWG_DBT = df_FWG_DBT[filtered_columns]
+
+        # Filter CTI and COB dataframes for plotting
+        filtered__df_CTI_DBT_plot.index = filtered__df_CTI_DBT_plot.index.map(lambda x: x.replace(year=int(sel_year_tab3)))
+
+
+        st.markdown('<div style="margin: 50px;"></div>', unsafe_allow_html=True)  # 20px vertical space   
+
+
 
         try:
-            df_CTI_filtered, df_COB_filtered, df_diff, fig_weekly, fig_monthly = calculate_and_plot_differences(
+            df_CTI_filtered, df_FWG_filtered, df_diff, fig_weekly, fig_diff_monthly = calculate_and_plot_differences(
                 threshold=lower_threshold,
                 df1=filtered__df_CTI_DBT_plot,
-                df2=df__MSTAT_DBT_plot,
-                color_cooler = color_marker_CTI, color_warmer=color_marker_FWG, chart_height=320,
+                df2=filtered__df_FWG_DBT,
+                color_cooler = color_marker_CTI, color_warmer=color_marker_FWG, chart_height=fig_diff_monthly__chart_height,
                 )
         except:
-            fig_weekly, fig_monthly = go.Figure(), go.Figure()
+            fig_weekly, fig_diff_monthly = go.Figure(), go.Figure()
 
         sel_location_CTI = selected_province
         sel_location_COB = selected_province
@@ -428,9 +488,10 @@ with colB:
 
             st.markdown(
             '###### Differenze di temperatura tra: CTI e FWG', help=help_text)
-            st.caption('Valori calcolati per le temperature superiori a **{t} C**'.format(t=lower_threshold))
+            st.plotly_chart(fig_diff_monthly,use_container_width=True)
 
-        colB1.plotly_chart(fig_monthly,use_container_width=True)
+            st.markdown('<div style="margin: 10px;"></div>', unsafe_allow_html=True)  # 20px vertical space
+            st.write('Valori calcolati per temperature superiori a **{t} C**'.format(t=lower_threshold))
 
 
         # LINE CHART
@@ -439,12 +500,12 @@ with colB:
             color_marker_A = color_marker_CTI,
             color_marker_B = color_marker_FWG,
             df_data_A = filtered__df_CTI_DBT_plot,
-            df_data_B = df__MSTAT_DBT_plot,
+            df_data_B = filtered__df_FWG_DBT,
             color_pool_A = color_pool_CTI,
-            color_pool_B = color_pool_COB,
+            color_pool_B = color_pool_CTI,
             title_text = '',
             # title_text = 'Temperature a Bulbo Secco per l\'anno {}'.format(sel_year),
-            chart_height = 380,
+            chart_height = fig_line__chart_height,
             )
 
         colB2.plotly_chart(fig_line_CTI_FWG, use_container_width=True)
@@ -489,34 +550,15 @@ col_name = df__FreqBars.columns[0]
 df__FreqBars['date'] = df__FreqBars.index
 
 # Bin data and calculate percentages
-binned_data_monthly = bin_and_calculate_percentages(temperature_data=df__FreqBars,  temperature_col= col_name,  intervals=temperature_bins, period='M')
-binned_data_weekly = bin_and_calculate_percentages(temperature_data=df__FreqBars,  temperature_col= col_name,  intervals=temperature_bins, period='W')
 
-fig__temp_bins_freq_monthly = create_plotly_express_chart(data=binned_data_monthly,   bins=temperature_bins, colors=color_palette, bar_gap=0.30, chart_height=150)
-fig__temp_bins_freq_weekly  = create_plotly_express_chart(data=binned_data_weekly,    bins=temperature_bins, colors=color_palette, bar_gap=0.00, chart_height=150)
+try:
+    binned_data_monthly = bin_and_calculate_percentages(temperature_data=df__FreqBars,  temperature_col= col_name,  intervals=temperature_bins, period='M')
+    binned_data_weekly = bin_and_calculate_percentages(temperature_data=df__FreqBars,  temperature_col= col_name,  intervals=temperature_bins, period='W')
 
-
-# with colB:
-#     st.markdown('<br>',unsafe_allow_html=True)
-#     st.markdown('###### Frequenza di temperature mensili e settimanali')
-
-#     colB_monthly, colB_weekly = st.columns([3,7])
-#     colB_monthly.plotly_chart(fig__temp_bins_freq_monthly, use_container_width=True)
-#     colB_weekly.plotly_chart(fig__temp_bins_freq_weekly, use_container_width=True)
-
-# 
-
-
-def filter_rows_by_threshold(df, column_name, threshold):
-    # Function to extract numbers from a string and check if they meet the condition
-    def numbers_meet_threshold(s):
-        numbers = [int(num) for num in re.findall(r'\d+', s)]
-        return all(num >= threshold for num in numbers)
-
-    # Apply the function to the specified column and filter the DataFrame
-    return df[df[column_name].apply(numbers_meet_threshold)]
-
-
+    fig__temp_bins_freq_monthly = create_plotly_express_chart(data=binned_data_monthly,   bins=temperature_bins, colors=color_palette, bar_gap=0.30, chart_height=150)
+    fig__temp_bins_freq_weekly  = create_plotly_express_chart(data=binned_data_weekly,    bins=temperature_bins, colors=color_palette, bar_gap=0.00, chart_height=150)
+except:
+    colB.warning('Data NOT available')
 
 
 

@@ -1,27 +1,19 @@
 # IMPORT LIBRARIES
-import streamlit as st, pandas as pd, numpy as np
-import re, os, sys, time,  datetime, json, requests, urllib.request
-from datetime import datetime
-from meteostat import Stations, Hourly
-from streamlit_plotly_events import plotly_events
-
-import pydeck # import pydeck instead of pdk
-import matplotlib.pyplot as plt, seaborn as sns, plotly.graph_objects as go, plotly.express as px, chart_studio
-from plotly.subplots import make_subplots
-chart_studio.tools.set_credentials_file(username='a.botti', api_key='aA5cNIJUz4yyMS9TLNhW');
-import leafmap.foliumap as leafmap
-mapbox_access_token = 'pk.eyJ1IjoiYW5kcmVhYm90dGkiLCJhIjoiY2xuNDdybms2MHBvMjJqbm95aDdlZ2owcyJ9.-fs8J1enU5kC3L4mAJ5ToQ'
-
+from fn__import_py_libs import *
 from fn__epw_read       import create_df_weather, epwab, strip_string_from_index, strip_string_from_columns
 from fn__color_pools    import create_color_pools
-from fn__create_charts  import calculate_and_plot_differences, generate_bar_bins_chart, generate_line_chart, generate_scatter_map_small
+from fn__create_charts  import calculate_and_plot_differences, generate_bar_bins_chart, generate_line_chart, generate_scatter_map_small, \
+fetch_daily_data, fetch_hourly_data, bin_and_calculate_percentages, create_plotly_go_chart, create_plotly_express_chart, generate_temperature_bins_chart
+
+mapbox_access_token = 'pk.eyJ1IjoiYW5kcmVhYm90dGkiLCJhIjoiY2xuNDdybms2MHBvMjJqbm95aDdlZ2owcyJ9.-fs8J1enU5kC3L4mAJ5ToQ'
+
 #
 #
 #
 #
 #
 # PAGE CONFIG
-st.set_page_config(page_title="ITACCA Streamlit App",   page_icon="🌡️", layout="wide")
+st.set_page_config(page_title="ITACA Streamlit App",   page_icon="🌡️", layout="wide")
 
 st.markdown(
     """<style>.block-container {padding-top: 0rem; padding-bottom: 0rem; padding-left: 3rem; padding-right: 3rem;}</style>""",
@@ -30,7 +22,7 @@ st.markdown(
 # TOP CONTAINER
 top_col1, top_col2 = st.columns([6,1])
 with top_col1:
-    st.markdown("# ITA.C.C.A")
+    st.markdown("# ITA.C.A")
     st.markdown("#### Analisi di dati meteorologici ITAliani per facilitare l'Adattamento ai Cambiamenti Climatici")
     st.caption('Developed by AB.S.RD - https://absrd.xyz/')
 #
@@ -128,7 +120,7 @@ df_CTI_DBT_plot = df_CTI_DBT_plot[sel_cols_CTI]
 
 
 sel_cols_COB = []
-for f in df_SelectedLocations_COB.filename:
+for f in df_SelectedLocations_COB.epw_filename:
     num = re.search(r'\d+', f).group()
     f = f.rsplit('.epw')[0]
     f = f.rsplit(num)[-1]
@@ -201,8 +193,8 @@ with tab1:
 
 
         df = df_SelectedLocations_COB
-        sel_location_COB = st.radio('Seleziona stazione meteo - dati Climate OneBuilding', [f.split(selected_reg+'_')[-1] for f in df.filename], index=None)
-        df_sel = df[df['filename'].isin(['ITA_{r}_{s}'.format(r=selected_reg,s=sel_location_COB)])]
+        sel_location_COB = st.radio('Seleziona stazione meteo - dati Climate OneBuilding', [f.split(selected_reg+'_')[-1] for f in df.epw_filename], index=None)
+        df_sel = df[df['epw_filename'].isin(['ITA_{r}_{s}'.format(r=selected_reg,s=sel_location_COB)])]
         df_stations_COB_line = df_sel
 
         fig_bar_bins_COB = generate_bar_bins_chart(
@@ -237,7 +229,7 @@ df_CTI_DBT_plot = df_CTI_DBT_plot[sel_cols_CTI_line]
 
 
 sel_cols_COB_line = []
-for f in df_stations_COB_line.filename:
+for f in df_stations_COB_line.epw_filename:
     num = re.search(r'\d+', f).group()
     f = f.rsplit('.epw')[0]
     f = f.rsplit(num)[-1]
