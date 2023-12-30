@@ -30,7 +30,8 @@ with TopColB:
     # Introduce vertical spaces
     st.markdown('<div style="margin: 35px;"></div>', unsafe_allow_html=True)  # 20px vertical space
 
-    with st.container(border=True):
+    # with st.container(border=True):
+    with st.container():
         # Your content here
         st.markdown('###### Scegli colore dei markers')
         TopColB1, TopColB2, TopColB3, TopColB4 = st.columns([1,1,1,1])

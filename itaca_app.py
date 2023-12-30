@@ -64,11 +64,8 @@ data_source = st.sidebar.radio(
 # Radio button for data type selection in the sidebar
 data_type = st.sidebar.radio(
     "Select the data type:",
-    ("CSV", "Pickle", "Parquet"), index=1,
+    ("CSV", "Pickle", "Parquet"), index=0,
 )
-
-# Display the selections in the main area
-# st.sidebar.write(f"Loading data from: **{data_source}** and type: **{data_type}**")
 
 
 LOCAL_PATH  = r'C:/_GitHub/andreabotti/itaca/'
@@ -130,16 +127,7 @@ def import_geojson_data():
 geojson_italy_regions, geojson_italy_provinces = import_geojson_data()
 
 
-# Load TopoJSON
-@st.cache_resource
-def LoadData_regions_provinces():
-    json_file = json.loads(requests.get(GEOJSON_PATH + 'limits_IT_regions.geojson').text)
-    geojson_italy_regions = json_file
 
-    json_file = json.loads(requests.get(GEOJSON_PATH + 'limits_IT_provinces.geojson').text)
-    geojson_italy_provinces = json_file
-    return geojson_italy_regions, geojson_italy_provinces
-geojson_italy_regions, geojson_italy_provinces = LoadData_regions_provinces()
 #
 #
 #
@@ -162,6 +150,19 @@ regions_list = list(dict_regions.values())
 
 
 # SAVE ST SESSION STATES
+st.session_state['MAIN_PATH'] = MAIN_PATH
+st.session_state['CSV_PATH'] = CSV_PATH
+st.session_state['GEOJSON_PATH'] = GEOJSON_PATH
+st.session_state['TXT_PATH'] = TXT_PATH
+
+st.session_state['FileExt'] = FileExt
+
+st.session_state['dict_regions'] = dict_regions
+st.session_state['regions_list'] = regions_list
+
+st.session_state['geojson_italy_regions'] = geojson_italy_regions
+st.session_state['geojson_italy_provinces'] = geojson_italy_provinces
+
 st.session_state['df_locations_CTI'] = df_locations_CTI
 st.session_state['df_locations_COB'] = df_locations_COB
 st.session_state['df_locations_COB_capo'] = df_locations_COB_capo
@@ -172,15 +173,3 @@ st.session_state['df_CTI_DBT'] = df_CTI_DBT
 st.session_state['df_COB_DBT'] = df_COB_DBT
 st.session_state['df__COB_capo__DBT'] = df__COB_capo__DBT
 
-st.session_state['geojson_italy_regions'] = geojson_italy_regions
-st.session_state['geojson_italy_provinces'] = geojson_italy_provinces
-
-# st.session_state['df_reg'] = df_reg_short
-st.session_state['dict_regions'] = dict_regions
-st.session_state['regions_list'] = regions_list
-
-st.session_state['MAIN_PATH'] = MAIN_PATH
-st.session_state['CSV_PATH'] = CSV_PATH
-st.session_state['GEOJSON_PATH'] = GEOJSON_PATH
-
-st.session_state['FileExt'] = FileExt

@@ -26,6 +26,53 @@ with top_col1:
 #
 #
 #
+
+
+cti_try_descr01 = "In questa sezione si rendono disponibili gli anni tipo climatici (Typical Meteorological Year - TMY) e le loro elaborazioni per \
+    110 località di riferimento distribuite sul territorio nazionale. Si tratta della base di calcolo ufficiale preparata e utilizzata dal CTI per \
+    la revisione della UNI 10349:1994 che ha portato nel corso del 2016 alla pubblicazione della nuova versione della norma. Rispetto all'edizione del 1994, \
+    i contenuti sono stati ampliati e la norma è stata suddivisa in tre diverse parti. \
+    La parte 1 riporta i dati climatici medi mensili necessari per la valutazione della prestazione energetica dell'edificio nonché i metodi per \
+    ripartire l'irradianza solare nelle frazioni diretta e diffusa e per calcolare l'irradianza solare su di una superficie inclinata. \
+    La parte 2 fornisce i dati di progetto da utilizzare per il dimensionamento degli impianti tecnici per la climatizzazione estiva ed invernale. \
+    La parte 3 riporta gli indici utili per la descrizione sintetica del clima delle diverse località (ad es. i gradi-giorno estivi e invernali) \
+    da utilizzarsi per la classificazione del territorio. "
+
+cti_try_descr02 = "I files, disponibile in download, comprende un archivio XLS contenente i dati orari dell\'anno tipo climatico per le Province della Regione Abruzzo. \
+    L\'anno tipo climatico consiste in 12 mesi caratteristici scelti da un database di dati meteorologici di un periodo che dovrebbe essere, \
+    preferibilmente ampio almeno 10 anni. \
+    La metodologia di calcolo utilizzata è quella riportata nella norma europea EN ISO 15927-4 \
+    \"Hygrothermal performance of buildings - Calculation and presentation of climatic data - Part 4: Hourly data for assessing the annual energy use for heating and cooling\". \
+    L’archivio, scaricabile gratuitamente, contiene record orari delle seguenti variabili meteorologiche: \
+    • temperatura; \
+    • irradianza solare diretta su piano orizzontale; \
+    • irradianza solare diffusa su piano orizzontale; \
+    • irradianza solare globale su piano orizzontale; \
+    • umidità relativa; \
+    • pressione parziale di vapore; \
+    • velocità del vento. \
+    Al Progetto hanno partecipato gli Esperti della Commissione tecnica (CT) 102 “Isolanti e isolamento - Metodi di calcolo e di prova (UNI/TS 11300-1)” \
+    del CTI e in particolare del suo Sotto-Gruppo (SG) 9 “Dati climatici” che funge anche da mirror al CEN/TC 89/WG9 (dati climatici). \
+    L\'attività è stata svolta nell’ambito della ricerca di sistema promossa dal Ministero dello Sviluppo Economico e da ENEA. \
+    "
+
+weather_morphing_descr01 = "\
+    Weather data morphing is a method to produce design weather data for building thermal simulations that accounts for future changes to climate. \
+    It combines present-day observed weather data with results from climate models <sup>12</sup>. \
+    PROMETHEUS is a project based in the University of Exeter that has created a number of future weather files using the UKCP09 weather generator <sup>34</sup>. \
+    These files can be used to test how future-proof buildings are against predicted climate change34. \
+    **Meteonorm** is a software that uses data from weather stations, satellites and interpolation models to deliver global weather data <sup>567</sup>. \
+    The **Future Weather Generator** is a web tool that allows users to generate future weather data for any location in the world using different climate models and scenarios. \
+    It is developed by the ADA AI Research Centre at the Polytechnic Institute of Coimbra. \
+    <br><br> **Fonti / References** <br> \
+    1 <br> \
+    2 https://www.osti.gov/etdeweb/biblio/20612858 <br> \
+    3 https://engineering.exeter.ac.uk/research/cee/research/prometheus/downloads/ <br> \
+    4 https://engineering.exeter.ac.uk/research/cee/research/prometheus/ <br> \
+    7 https://adai.pt/future-weather-generator/documentation/ \
+    "
+
+
 col1, spacing, col2 = st.columns([9,1,12])
 
 with col1:
@@ -59,8 +106,8 @@ with tab1:
 
     # st.divider()
     with st.expander('*Per avere più dettagli sugli anni tipo climatici - banca dati CTI*'):
-        st.write('\n'.join(cti_try_descr01))
-        st.write('\n'.join(cti_try_descr02))
+        st.markdown(cti_try_descr01)
+        st.markdown(cti_try_descr02)
         st.caption('Fonte: https://try.cti2000.it/')
 
     st.divider()
@@ -85,7 +132,7 @@ with tab3:
     st.markdown('#### Il futuro: proiezioni climatiche e *morphing*')
     st.markdown('#### Il *morphing* dei dati climatici')
     with st.expander('*Dettagli sul morphing di dati climatici per ottenere l\'anno climatico tipo per climi futuri*'):
-        st.markdown('\n'.join(weather_morphing_descr01), unsafe_allow_html=True)
+        st.markdown(weather_morphing_descr01, unsafe_allow_html=True)
 
     st.markdown('#### Lo strumento *Future Weather Generator*')
 # st.dataframe( df_COB_DBT.reindex(sorted(df_COB_DBT.columns), axis=1) )

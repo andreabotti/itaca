@@ -4,7 +4,6 @@ from fn__import_py_libs import *
 
 
 # Load Data
-@st.cache_resource
 def LoadData__locations_CTI_COB(CSV_PATH,file_ext):
     try:
         if file_ext == '.pkl':  # Handling for Pickle files
@@ -55,7 +54,6 @@ def LoadData__locations_CTI_COB(CSV_PATH,file_ext):
 
 
 # Load DBT for CTI and COB datasets
-@st.cache_resource
 def LoadData__DBT__CTI_COB__all(CSV_PATH,file_ext):
     try:
         if file_ext == '.pkl':  # Handling for Pickle files
@@ -96,13 +94,10 @@ def LoadData__DBT__CTI_COB__all(CSV_PATH,file_ext):
 
     return df_CTI, df_COB, df_COB_capo
 
-# df_CTI_DBT, df_COB_DBT, df__COB_capo__DBT = LoadData__DBT__CTI_COB__all()
-
 
 
 
 # Load TopoJSON
-@st.cache_resource
 def LoadData_regions_provinces(GEOJSON_PATH):
     json_file = json.loads(requests.get(GEOJSON_PATH + 'limits_IT_regions.geojson').text)
     geojson_italy_regions = json_file
@@ -111,4 +106,25 @@ def LoadData_regions_provinces(GEOJSON_PATH):
     geojson_italy_provinces = json_file
     return geojson_italy_regions, geojson_italy_provinces
 
-# geojson_italy_regions, geojson_italy_provinces = LoadData_regions_provinces()
+
+
+
+
+def load_file_from_url(url):
+    response = requests.get(url)
+    response.raise_for_status()  # This will raise an error if the download failed
+    return response.text
+
+
+# Load Text Descriptions
+def LoadData_text_descriptions(TXT_PATH, file_name_ext):
+    
+    if TXT_PATH.startswith('http://') or TXT_PATH.startswith('https://'):
+        url_text_file = TXT_PATH + file_name_ext
+        parsed_text = load_file_from_url(url=url_text_file)
+
+    else:
+        with open(url_text_file,  encoding='utf8') as f:
+            parsed_text = f.readlines()
+
+    return parsed_text
