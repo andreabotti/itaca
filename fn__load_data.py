@@ -52,7 +52,6 @@ def LoadData__locations_CTI_COB(CSV_PATH,file_ext):
 
 
 
-
 # Load DBT for CTI and COB datasets
 def LoadData__DBT__CTI_COB__all(CSV_PATH,file_ext):
     try:
@@ -96,7 +95,6 @@ def LoadData__DBT__CTI_COB__all(CSV_PATH,file_ext):
 
 
 
-
 # Load TopoJSON
 def LoadData_regions_provinces(GEOJSON_PATH):
     json_file = json.loads(requests.get(GEOJSON_PATH + 'limits_IT_regions.geojson').text)
@@ -109,22 +107,42 @@ def LoadData_regions_provinces(GEOJSON_PATH):
 
 
 
-
 def load_file_from_url(url):
     response = requests.get(url)
     response.raise_for_status()  # This will raise an error if the download failed
     return response.text
 
-
-# Load Text Descriptions
-def LoadData_text_descriptions(TXT_PATH, file_name_ext):
+# # Load Text Descriptions
+# def LoadData_text_descriptions(TXT_PATH, file_name_ext):
     
-    if TXT_PATH.startswith('http://') or TXT_PATH.startswith('https://'):
-        url_text_file = TXT_PATH + file_name_ext
-        parsed_text = load_file_from_url(url=url_text_file)
+#     if TXT_PATH.startswith('http://') or TXT_PATH.startswith('https://'):
+#         url_text_file = TXT_PATH + file_name_ext
+#         parsed_text = load_file_from_url(url=url_text_file)
 
-    else:
-        with open(url_text_file,  encoding='utf8') as f:
-            parsed_text = f.readlines()
+#     else:
+#         with open(url_text_file,  encoding='utf8') as f:
+#             parsed_text = f.readlines()
 
-    return parsed_text
+#     return parsed_text
+
+
+
+def fetch_daily_data(latitude, longitude, start_date, end_date):
+    # Create a Point for the location
+    location = Point(latitude, longitude)
+
+    # Fetch daily data
+    data = Daily(location, start_date, end_date)
+    daily_data = data.fetch()
+
+    return daily_data
+#
+def fetch_hourly_data(latitude, longitude, start_date, end_date):
+    # Create a Point for the location
+    location = Point(latitude, longitude)
+
+    # Fetch hourly data
+    data = Hourly(location, start_date, end_date)
+    hourly_data = data.fetch()
+
+    return hourly_data

@@ -1,15 +1,17 @@
 # This file - imports.py - allows to modularise the streamlit app code, and import all necessary python libraries at once
 
 # Data handling and general libraries
-import pandas as pd, numpy as np
-import io, re, os, sys, time, json, datetime
+import io, re, os, sys, time, json, datetime, requests, urllib.request, base64
+
 from datetime import datetime
-import requests, urllib.request, json
-from meteostat import Stations, Hourly
-import geopandas as gpd
+import numpy as np, pandas as pd, geopandas as gpd
+from meteostat import Stations, Hourly, Daily, Point
 
 # Streamlit
 import streamlit as st
+import folium
+from streamlit_folium import folium_static
+
 
 # Plotting
 import pydeck as pdk

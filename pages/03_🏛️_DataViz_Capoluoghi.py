@@ -1,11 +1,11 @@
 # IMPORT LIBRARIES
-from fn__import_py_libs import *
 mapbox_access_token = 'pk.eyJ1IjoiYW5kcmVhYm90dGkiLCJhIjoiY2xuNDdybms2MHBvMjJqbm95aDdlZ2owcyJ9.-fs8J1enU5kC3L4mAJ5ToQ'
 
+from fn__import_py_libs import *
 from fn__epw_read       import create_df_weather, epwab, strip_string_from_index, strip_string_from_columns
 from fn__color_pools    import create_color_pools
-from fn__create_charts  import calculate_and_plot_differences, generate_bar_bins_chart, generate_line_chart, generate_scatter_map_small, \
-fetch_daily_data, fetch_hourly_data, bin_and_calculate_percentages, create_plotly_go_chart, create_plotly_express_chart, generate_temperature_bins_chart
+from fn__load_data      import *
+from fn__create_charts  import calculate_and_plot_differences, generate_line_chart, bin_and_calculate_percentages, create_plotly_express_chart, generate_scatter_map_small
 
 #
 #
@@ -233,7 +233,7 @@ colA.plotly_chart(fig_small_221, use_container_width=True)
 #
 #
 #
-# Adding Tabs in Column 22 for Different Charts
+# Adding Tabs in ColumnB for Different Charts
 with colB:
     tab1, tab2, tab3, tab4 = st.tabs(
         ["🌤️ CTI vs COB (anno tipo recente)", "🌡️ CTI vs MSTAT (anni reali recenti)", "🥵 CTI vs FWG (anno tipo futuro)", '📊 Tutti i dati - Heatmaps']

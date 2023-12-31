@@ -1,14 +1,4 @@
-import streamlit as st
-
-import pandas as pd, numpy as np, re
-import colorsys, random, math
-from datetime import datetime
-from meteostat import Point, Daily, Hourly
-
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import plotly.express as px
-import altair as alt
+from fn__import_py_libs import *
 
 
 
@@ -257,14 +247,179 @@ def generate_line_chart(
         type="date"
         )
     )
-
-    # Return the plot
     return fig_line
-#
-#
-#
-#
-#
+
+
+
+
+
+def generate_folium_map_with_geojson_popup(
+        selected_region, geojson_province, geojson_region,
+        center_lat, center_lon, zoom_start,
+        color_region, color_province, fill_opacity_region, fill_opacity_province,
+        map_tileset, jawg_access_token):
+    
+    if map_tileset == 'jawg':
+        # Create a Folium map with the specified center and zoom level
+        m = folium.Map(location=[center_lat, center_lon], zoom_start=zoom_start)
+
+        # URL for the Jawg.Light tiles
+        jawg_light_url = 'https://{s}.tile.jawg.io/jawg-light/{z}/{x}/{y}{r}.png?access-token={accessToken}'
+
+        # Add the Jawg.Light tile layer
+        folium.TileLayer(
+            tiles=jawg_light_url,
+            attr='&copy; <a href="https://www.jawg.io" target="_blank">Jawg Maps</a>',
+            subdomains='abcd',
+            accessToken=jawg_access_token,  # Replace with your Jawg access token
+            name='Jawg.Light',
+            control=False
+        ).add_to(m)
+
+    else:
+        # Create a Folium map with the specified center and zoom level
+        m = folium.Map(location=[center_lat, center_lon], zoom_start=zoom_start, tiles=map_tileset)
+
+
+    # Filter function for provinces and regions GeoJSON data
+    def filter_geojson_by_region(geojson_data, region_name, key):
+        filtered_features = [feature for feature in geojson_data['features']
+                             if feature['properties'][key] == region_name]
+        return {'type': 'FeatureCollection', 'features': filtered_features}
+
+    # Filter provinces and the region based on selected region
+    filtered_provinces = filter_geojson_by_region(geojson_province, selected_region, 'reg_name')
+    filtered_region = filter_geojson_by_region(geojson_region, selected_region, 'reg_name')
+
+    # Define style functions for provinces and regions
+    def style_province(feature):
+        return {
+            'fillColor': color_province,    # Fill color for provinces
+            'color': color_province,        # Border color for provinces
+            'weight': 2,                    # Border width for provinces
+            'dashArray': '3, 3',            # Style of the border (optional)
+            'fillOpacity': fill_opacity_province,    # Fill opacity for provinces
+        }
+
+    def style_region(feature):
+        return {
+            'fillColor': color_region,  # Fill color for regions
+            'color': color_region,      # Border color for regions
+            'weight': 4,                # Border width for regions
+            'dashArray': '1, 5',            # Style of the border (optional)
+            'fillOpacity': fill_opacity_region,      # Fill opacity for regions
+        }
+
+    # Check and add filtered GeoJSON layer for provinces
+    if filtered_provinces['features']:
+        folium.GeoJson(
+            filtered_provinces,
+            name='Provinces',
+            style_function=style_province,
+            tooltip=folium.GeoJsonTooltip(fields=['prov_name']),    # Tooltip for provinces
+            popup=folium.GeoJsonPopup(fields=['prov_name']),        # Popup for provinces
+        ).add_to(m)
+    else:
+        print(f"No provinces found for region: {selected_region}")
+
+    # Check and add filtered GeoJSON layer for the selected region
+    if filtered_region['features']:
+        folium.GeoJson(
+            filtered_region,
+            name='Selected Region',
+            style_function=style_region,
+            tooltip=folium.GeoJsonTooltip(fields=['reg_name']),     # Tooltip for region
+            popup=folium.GeoJsonPopup(fields=['reg_name']),         # Popup for region
+        ).add_to(m)
+    else:
+        print(f"No region found with the name: {selected_region}")
+
+
+    # Add a layer control panel
+    folium.LayerControl().add_to(m)
+
+    return m
+
+
+# Function to add markers
+def add_markers_to_map(m, latitude_col, longitude_col, location_col, marker_color, marker_icon, marker_size):
+
+    # Add points for each location
+    for lat, lon, location in zip(latitude_col, longitude_col, location_col):
+        folium.Marker(
+            [lat, lon],
+            popup=location,
+            icon=folium.Icon(color=marker_color, icon=marker_icon, size=marker_size)
+            ).add_to(m)
+
+    return m
+
+
+
+
+
+
+
+
+
+
+
+
+
+def color_svg(svg_file_path, new_color_hex, output_file_path):
+    # Read the SVG file
+    with open(svg_file_path, 'r') as file:
+        svg_content = file.read()
+
+    # Replace the color (this example assumes you're replacing black '#000000' with your new color)
+    svg_content = svg_content.replace('#000000', new_color_hex)
+
+    # Write the modified SVG back to a new file
+    with open(output_file_path, 'w') as file:
+        file.write(svg_content)
+
+
+
+# def encode_icon(svg_path):
+#     with open(svg_path, 'r') as file:
+#         svg = file.read()
+#     return base64.b64encode(svg.encode('utf-8')).decode('utf-8')
+
+def encode_icon(svg_url):
+    response = requests.get(svg_url)
+    if response.status_code == 200:
+        svg = response.text
+        return base64.b64encode(svg.encode('utf-8')).decode('utf-8')
+    else:
+        raise Exception(f"Error fetching SVG: {response.status_code}")
+
+
+
+def add_custom_svg_markers(map_object, latitudes, longitudes, popups, svg_path):
+    encoded_icon = encode_icon(svg_path)
+    svg_url = f"data:image/svg+xml;base64,{encoded_icon}"
+    icon = folium.CustomIcon(icon_image=svg_url, icon_size=(30, 30)) # You can change icon size
+
+    for lat, lon, popup in zip(latitudes, longitudes, popups):
+        folium.Marker(
+            location=[lat, lon],
+            popup=popup,
+            icon=icon
+        ).add_to(map_object)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def generate_scatter_map_small(
         latitude_col, longitude_col, location_col, chart_height, marker_size, marker_color, zoom01, zoom02,mapbox_access_token):
     fig_small_01 = go.Figure()
@@ -301,25 +456,6 @@ def generate_scatter_map_small(
 #
 #
 
-def fetch_daily_data(latitude, longitude, start_date, end_date):
-    # Create a Point for the location
-    location = Point(latitude, longitude)
-
-    # Fetch daily data
-    data = Daily(location, start_date, end_date)
-    daily_data = data.fetch()
-
-    return daily_data
-#
-def fetch_hourly_data(latitude, longitude, start_date, end_date):
-    # Create a Point for the location
-    location = Point(latitude, longitude)
-
-    # Fetch hourly data
-    data = Hourly(location, start_date, end_date)
-    hourly_data = data.fetch()
-
-    return hourly_data
 
 
 
