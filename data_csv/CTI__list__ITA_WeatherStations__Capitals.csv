@@ -1,21 +1,21 @@
-,reg_shortname,reg_name,province,location
-0,AB,Abruzzo,AQ,L'Aquila
-1,BC,Basilicata,PZ,Potenza
-2,CL,Calabria,CZ,Catanzaro
-3,CM,Campania,NA,Napoli
-4,ER,Emilia Romagna,BO,Bologna
-5,FV,Friuli Venezia Giulia,TS,Trieste
-6,LZ,Lazio,RM,Roma
-7,LG,Liguria,GE,Genova
-8,LM,Lombardia,MI,Milano
-9,MH,Marche,AN,Ancona
-10,ML,Molise,CB,Campobasso
-11,PM,Piemonte,TO,Torino
-12,PU,Puglia,BA,Bari
-13,SD,Sardegna,CA,Cagliari
-14,SC,Sicilia,PA,Palermo
-15,TC,Toscana,FI,Firenze
-16,TT,Trentino Alto Adige,TN,Trento
-17,UM,Umbria,PG,Perugia
-18,VD,Valle dAosta,AO,Aosta
-19,VN,Veneto,VE,Venezia
+,reg_shortname,reg_name,province,location,lat,lon
+0,AB,Abruzzo,AQ,L'Aquila,42.1368853,13.610341022538911
+1,BC,Basilicata,PZ,Potenza,40.51731195,15.821608824871046
+2,CL,Calabria,CZ,Catanzaro,38.82996034999999,16.43155687627833
+3,CM,Campania,NA,Napoli,40.8358846,14.2487679
+4,ER,Emilia Romagna,BO,Bologna,44.4938203,11.3426327
+5,FV,Friuli Venezia Giulia,TS,Trieste,45.6496485,13.7772781
+6,LZ,Lazio,RM,Roma,41.8933203,12.4829321
+7,LG,Liguria,GE,Genova,44.40726,8.9338624
+8,LM,Lombardia,MI,Milano,45.4641943,9.1896346
+9,MH,Marche,AN,Ancona,43.480120400000004,13.218790609151764
+10,ML,Molise,CB,Campobasso,41.717264799999995,14.826226697820019
+11,PM,Piemonte,TO,Torino,45.0677551,7.6824892
+12,PU,Puglia,BA,Bari,41.1257843,16.8620293
+13,SD,Sardegna,CA,Cagliari,39.2171994,9.113311
+14,SC,Sicilia,PA,Palermo,38.1112268,13.3524434
+15,TC,Toscana,FI,Firenze,43.7698712,11.2555757
+16,TT,Trentino Alto Adige,TN,Trento,46.0664228,11.1257601
+17,UM,Umbria,PG,Perugia,43.1070321,12.402996209906487
+18,VD,Valle dAosta,AO,Aosta,45.7370885,7.3196649
+19,VN,Veneto,VE,Venezia,45.4371908,12.3345898

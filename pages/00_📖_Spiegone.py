@@ -3,29 +3,18 @@ from fn__import_py_libs import *
 from fn__load_data import *
 
 mapbox_access_token = 'pk.eyJ1IjoiYW5kcmVhYm90dGkiLCJhIjoiY2xuNDdybms2MHBvMjJqbm95aDdlZ2owcyJ9.-fs8J1enU5kC3L4mAJ5ToQ'
-#
-#
-#
-#
-#
+
+
+
+
 # PAGE CONFIG
-st.set_page_config(page_title="ITACA Streamlit App",   page_icon=":book:", layout="wide")
+st.set_page_config(page_title="ITACA Streamlit App", page_icon='🍝', layout="wide")
+from fn__page_header import create_page_header
+color_marker_CTI, color_marker_COB, color_marker_MSTAT, color_marker_FWG = create_page_header()
 
-st.markdown(
-    """<style>.block-container {padding-top: 0rem; padding-bottom: 0rem; padding-left: 3rem; padding-right: 3rem;}</style>""",
-    unsafe_allow_html=True)
 
-# TOP CONTAINER
-top_col1, top_col2 = st.columns([6,1])
-with top_col1:
-    st.markdown("# ITA.C.A")
-    st.markdown("#### Analisi di dati meteorologici ITAliani per facilitare l'Adattamento ai Cambiamenti Climatici")
-    st.caption('Developed by AB.S.RD - https://absrd.xyz/')
-#
-#
-#
-#
-#
+
+
 
 
 cti_try_descr01 = "In questa sezione si rendono disponibili gli anni tipo climatici (Typical Meteorological Year - TMY) e le loro elaborazioni per \

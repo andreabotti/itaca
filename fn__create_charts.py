@@ -165,16 +165,13 @@ def calculate_and_plot_differences(threshold, df1, df2, color_cooler, color_warm
 
     # Return the weekly and monthly plots
     return df1_filtered, df2_filtered, df_diff, fig_weekly, fig_monthly
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+
+
+
+##### ##### ##### ##### #####
+
+
+
 def generate_line_chart(
         df_data_A, df_data_B, color_marker_A, color_marker_B, color_pool_A, color_pool_B,
         chart_height, title_text,
@@ -251,118 +248,7 @@ def generate_line_chart(
 
 
 
-
-
-def generate_folium_map_with_geojson_popup(
-        selected_region, geojson_province, geojson_region,
-        center_lat, center_lon, zoom_start,
-        color_region, color_province, fill_opacity_region, fill_opacity_province,
-        map_tileset, jawg_access_token):
-    
-    if map_tileset == 'jawg':
-        # Create a Folium map with the specified center and zoom level
-        m = folium.Map(location=[center_lat, center_lon], zoom_start=zoom_start)
-
-        # URL for the Jawg.Light tiles
-        jawg_light_url = 'https://{s}.tile.jawg.io/jawg-light/{z}/{x}/{y}{r}.png?access-token={accessToken}'
-
-        # Add the Jawg.Light tile layer
-        folium.TileLayer(
-            tiles=jawg_light_url,
-            attr='&copy; <a href="https://www.jawg.io" target="_blank">Jawg Maps</a>',
-            subdomains='abcd',
-            accessToken=jawg_access_token,  # Replace with your Jawg access token
-            name='Jawg.Light',
-            control=False
-        ).add_to(m)
-
-    else:
-        # Create a Folium map with the specified center and zoom level
-        m = folium.Map(location=[center_lat, center_lon], zoom_start=zoom_start, tiles=map_tileset)
-
-
-    # Filter function for provinces and regions GeoJSON data
-    def filter_geojson_by_region(geojson_data, region_name, key):
-        filtered_features = [feature for feature in geojson_data['features']
-                             if feature['properties'][key] == region_name]
-        return {'type': 'FeatureCollection', 'features': filtered_features}
-
-    # Filter provinces and the region based on selected region
-    filtered_provinces = filter_geojson_by_region(geojson_province, selected_region, 'reg_name')
-    filtered_region = filter_geojson_by_region(geojson_region, selected_region, 'reg_name')
-
-    # Define style functions for provinces and regions
-    def style_province(feature):
-        return {
-            'fillColor': color_province,    # Fill color for provinces
-            'color': color_province,        # Border color for provinces
-            'weight': 2,                    # Border width for provinces
-            'dashArray': '3, 3',            # Style of the border (optional)
-            'fillOpacity': fill_opacity_province,    # Fill opacity for provinces
-        }
-
-    def style_region(feature):
-        return {
-            'fillColor': color_region,  # Fill color for regions
-            'color': color_region,      # Border color for regions
-            'weight': 4,                # Border width for regions
-            'dashArray': '1, 5',            # Style of the border (optional)
-            'fillOpacity': fill_opacity_region,      # Fill opacity for regions
-        }
-
-    # Check and add filtered GeoJSON layer for provinces
-    if filtered_provinces['features']:
-        folium.GeoJson(
-            filtered_provinces,
-            name='Provinces',
-            style_function=style_province,
-            tooltip=folium.GeoJsonTooltip(fields=['prov_name']),    # Tooltip for provinces
-            popup=folium.GeoJsonPopup(fields=['prov_name']),        # Popup for provinces
-        ).add_to(m)
-    else:
-        print(f"No provinces found for region: {selected_region}")
-
-    # Check and add filtered GeoJSON layer for the selected region
-    if filtered_region['features']:
-        folium.GeoJson(
-            filtered_region,
-            name='Selected Region',
-            style_function=style_region,
-            tooltip=folium.GeoJsonTooltip(fields=['reg_name']),     # Tooltip for region
-            popup=folium.GeoJsonPopup(fields=['reg_name']),         # Popup for region
-        ).add_to(m)
-    else:
-        print(f"No region found with the name: {selected_region}")
-
-
-    # Add a layer control panel
-    folium.LayerControl().add_to(m)
-
-    return m
-
-
-# Function to add markers
-def add_markers_to_map(m, latitude_col, longitude_col, location_col, marker_color, marker_icon, marker_size):
-
-    # Add points for each location
-    for lat, lon, location in zip(latitude_col, longitude_col, location_col):
-        folium.Marker(
-            [lat, lon],
-            popup=location,
-            icon=folium.Icon(color=marker_color, icon=marker_icon, size=marker_size)
-            ).add_to(m)
-
-    return m
-
-
-
-
-
-
-
-
-
-
+##### ##### ##### ##### #####
 
 
 
@@ -379,12 +265,6 @@ def color_svg(svg_file_path, new_color_hex, output_file_path):
         file.write(svg_content)
 
 
-
-# def encode_icon(svg_path):
-#     with open(svg_path, 'r') as file:
-#         svg = file.read()
-#     return base64.b64encode(svg.encode('utf-8')).decode('utf-8')
-
 def encode_icon(svg_url):
     response = requests.get(svg_url)
     if response.status_code == 200:
@@ -392,7 +272,6 @@ def encode_icon(svg_url):
         return base64.b64encode(svg.encode('utf-8')).decode('utf-8')
     else:
         raise Exception(f"Error fetching SVG: {response.status_code}")
-
 
 
 def add_custom_svg_markers(map_object, latitudes, longitudes, popups, svg_path):
@@ -409,54 +288,7 @@ def add_custom_svg_markers(map_object, latitudes, longitudes, popups, svg_path):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-def generate_scatter_map_small(
-        latitude_col, longitude_col, location_col, chart_height, marker_size, marker_color, zoom01, zoom02,mapbox_access_token):
-    fig_small_01 = go.Figure()
-    fig_small_01.add_traces(
-        go.Scattermapbox(
-            lat=latitude_col,
-            lon=longitude_col,
-            text=location_col,
-            mode='markers',
-            marker=go.scattermapbox.Marker(size=marker_size, color=marker_color),
-            )
-    )
-    fig_small_01.update_layout(
-        showlegend=False,
-        height=chart_height,
-        hovermode='closest',
-        mapbox_style="light",
-        margin={"r":0,"t":0,"l":0,"b":0},
-        mapbox=dict(
-            accesstoken=mapbox_access_token,
-            center=dict(lat=latitude_col[0],lon=longitude_col[0]),
-            zoom=zoom01,
-        )
-    )
-    fig_small_02 = go.Figure(fig_small_01)
-    fig_small_02.update_layout(
-        mapbox=dict(zoom=zoom02)
-    )
-
-    return fig_small_01, fig_small_02
-#
-#
-#
-#
-#
-
-
+##### ##### ##### ##### #####
 
 
 
@@ -707,3 +539,11 @@ def generate_temperature_bins_chart(bins, df, color_palette, chart_height, freq)
     fig = go.Figure(data=data, layout=layout)
     
     return fig
+
+
+
+
+
+
+
+

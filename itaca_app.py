@@ -1,6 +1,8 @@
 # IMPORT LIBRARIES
 from fn__import_py_libs import *
 from fn__load_data import *
+from fn__mapping import *
+from fn__create_charts import *
 
 mapbox_access_token = 'pk.eyJ1IjoiYW5kcmVhYm90dGkiLCJhIjoiY2xuNDdybms2MHBvMjJqbm95aDdlZ2owcyJ9.-fs8J1enU5kC3L4mAJ5ToQ'
 #
@@ -9,18 +11,8 @@ mapbox_access_token = 'pk.eyJ1IjoiYW5kcmVhYm90dGkiLCJhIjoiY2xuNDdybms2MHBvMjJqbm
 #
 # PAGE CONFIG
 st.set_page_config(page_title="ITACA Streamlit App",   page_icon=':mostly_sunny:', layout="wide")
-st.markdown(
-    """<style>.block-container {padding-top: 0rem; padding-bottom: 0rem; padding-left: 2.5rem; padding-right: 2.5rem;}</style>""",
-    unsafe_allow_html=True)
-
-
-# TOP CONTAINER
-top_col1, top_col2 = st.columns([6,1])
-with top_col1:
-    st.markdown("# ITA.C.A")
-    st.markdown("#### Analisi di dati meteorologici ITAliani per facilitare l'Adattamento ai Cambiamenti Climatici")
-    st.caption('Developed by AB.S.RD - https://absrd.xyz/')
-#
+from fn__page_header import create_page_header
+create_page_header()#
 #
 #
 #
@@ -90,18 +82,19 @@ CSV_PATH = MAIN_PATH + 'data_csv/'
 GEOJSON_PATH = MAIN_PATH + 'data_geojson/'
 TXT_PATH = MAIN_PATH + 'data_txt/'
 SVG_PATH = MAIN_PATH + 'img_svg/'
+RASTER_PATH = MAIN_PATH + 'img_raster/'
 #
 
 
 # Load Data
 @st.cache_resource()
 def import_csv_data():
-    df_locations_CTI, df_locations_COB, df_locations_CTI_capo, df_locations_COB_capo = LoadData__locations_CTI_COB(CSV_PATH,FileExt)
-    df_CTI_DBT, df_COB_DBT, df__COB_capo__DBT = LoadData__DBT__CTI_COB__all(CSV_PATH,FileExt)
+    df__list__CTI, df__list__COB, df__list__MSTAT, df__list__ITA_capo, df__list__COB_capo = LoadData__locations_CTI_COB_MSTAT(CSV_PATH,FileExt)
+    df__DBT__CTI, df__DBT__COB, df__DBT__COB_capo = LoadData__DBT__CTI_COB__all(CSV_PATH,FileExt)
     
-    return df_locations_CTI, df_locations_COB, df_locations_CTI_capo, df_locations_COB_capo, df_CTI_DBT, df_COB_DBT, df__COB_capo__DBT
+    return df__list__CTI, df__list__COB, df__list__MSTAT, df__list__ITA_capo, df__list__COB_capo, df__DBT__CTI, df__DBT__COB, df__DBT__COB_capo
 
-df_locations_CTI, df_locations_COB, df_locations_CTI_capo, df_locations_COB_capo, df_CTI_DBT, df_COB_DBT, df__COB_capo__DBT = import_csv_data()
+df__list__CTI, df__list__COB, df__list__MSTAT, df__list__ITA_capo, df__list__COB_capo, df__DBT__CTI, df__DBT__COB, df__DBT__COB_capo = import_csv_data()
 
 
 def drop_unnamed_columns(df):
@@ -109,31 +102,26 @@ def drop_unnamed_columns(df):
     df = df.loc[:, ~df.columns.str.contains('Unnamed')]
     return df
 
-df_locations_CTI = drop_unnamed_columns(df_locations_CTI)
-df_locations_CTI_capo = drop_unnamed_columns(df_locations_CTI_capo)
-df_locations_COB = drop_unnamed_columns(df_locations_COB)
-df_locations_COB_capo = drop_unnamed_columns(df_locations_COB_capo)
-df_capoluoghi = df_locations_CTI_capo
-
+df__list__CTI       = drop_unnamed_columns(df__list__CTI)
+df__list__ITA_capo  = drop_unnamed_columns(df__list__ITA_capo)
+df__list__COB       = drop_unnamed_columns(df__list__COB)
+df__list__COB_capo  = drop_unnamed_columns(df__list__COB_capo)
 
 
 # Load TopoJSON
 @st.cache_resource
 def import_geojson_data():
     geojson_italy_regions, geojson_italy_provinces = LoadData_regions_provinces(GEOJSON_PATH)
-
     return geojson_italy_regions, geojson_italy_provinces
 
 geojson_italy_regions, geojson_italy_provinces = import_geojson_data()
-
-
-
 #
 #
 #
 #
 #
 url__cti__dict_regions      = MAIN_PATH + 'CTI__dict__Regions.json'
+
 # DICT REGIONS
 cti__dict_regions = {
     "AB":"Abruzzo",         "BC":"Basilicata",          "CM":"Campania",
@@ -163,13 +151,41 @@ st.session_state['regions_list'] = regions_list
 st.session_state['geojson_italy_regions'] = geojson_italy_regions
 st.session_state['geojson_italy_provinces'] = geojson_italy_provinces
 
-st.session_state['df_locations_CTI'] = df_locations_CTI
-st.session_state['df_locations_COB'] = df_locations_COB
-st.session_state['df_locations_COB_capo'] = df_locations_COB_capo
-st.session_state['df_capoluoghi'] = df_capoluoghi
+st.session_state['df__list__CTI'] = df__list__CTI
+st.session_state['df__list__COB'] = df__list__COB
+st.session_state['df__list__MSTAT'] = df__list__MSTAT
+st.session_state['df__list__COB_capo'] = df__list__COB_capo
+st.session_state['df__list__ITA_capo'] = df__list__ITA_capo
 
 
-st.session_state['df_CTI_DBT'] = df_CTI_DBT
-st.session_state['df_COB_DBT'] = df_COB_DBT
-st.session_state['df__COB_capo__DBT'] = df__COB_capo__DBT
+st.session_state['df__DBT__CTI'] = df__DBT__CTI
+st.session_state['df__DBT__COB'] = df__DBT__COB
+st.session_state['df__DBT__COB_capo'] = df__DBT__COB_capo
 
+
+########## ########## ########## ########## ########## ########## ##########
+st.markdown('TEST')
+st.dataframe(df__DBT__COB_capo)
+########## ########## ########## ########## ########## ########## ##########
+
+image_path_02 = RASTER_PATH + "ClimateCopernicusEU__30WarmestMonths.jpg"
+image_path_01 = RASTER_PATH + "TemperatureBarChart__Italy__1901-2020__2021-07-13.jpg"
+image_path_03 = RASTER_PATH + "IPCC-cartoon-01.jpg" 
+
+
+st.markdown(' ')
+
+col1, col2 = st.columns([55,48])
+
+with col1:
+    # st.markdown(image_path_01)
+    st.image(
+        image=image_path_01,
+        caption=None, use_column_width=True, clamp=False, channels="RGB", output_format="auto",
+        )
+
+with col2:
+    st.image(
+        image=image_path_02,
+        caption=None, use_column_width=True, clamp=False, channels="RGB", output_format="auto",
+        )

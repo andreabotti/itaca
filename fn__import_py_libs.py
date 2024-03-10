@@ -1,4 +1,5 @@
-# This file - imports.py - allows to modularise the streamlit app code, and import all necessary python libraries at once
+# This file allows to modularise the streamlit app code, and import all necessary python libraries at once
+
 
 # Data handling and general libraries
 import io, re, os, sys, time, json, datetime, requests, urllib.request, base64
@@ -7,10 +8,17 @@ from datetime import datetime
 import numpy as np, pandas as pd, geopandas as gpd
 from meteostat import Stations, Hourly, Daily, Point
 
-# Streamlit
+
+# Mapping
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderTimedOut
+from geopy.distance import geodesic
+from scipy.spatial.distance import cdist
+
+
 import streamlit as st
 import folium
-from streamlit_folium import folium_static
+from streamlit_folium import folium_static, st_folium
 
 
 # Plotting
@@ -24,11 +32,3 @@ import altair as alt
 import leafmap.foliumap as leafmap
 import chart_studio
 chart_studio.tools.set_credentials_file(username='a.botti', api_key='aA5cNIJUz4yyMS9TLNhW');
-
-
-# Custom libraries
-from fn__epw_read import create_df_weather, epwab, strip_string_from_index, strip_string_from_columns
-from fn__color_pools import create_color_pools
-from fn__create_charts import calculate_and_plot_differences
-from fn__locations_mapping import *
-#
