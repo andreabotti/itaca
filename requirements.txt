@@ -69,6 +69,7 @@ future==0.18.3
 gdown==4.7.1
 geojson==3.0.1
 geopandas==0.13.2
+geopy
 gitdb==4.0.10
 GitPython==3.1.31
 google-auth==2.22.0
